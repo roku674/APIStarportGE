@@ -1,8 +1,7 @@
 # Optimization
  Standard classes usable accross multiple projects
  Comes with dll version of files and a batch script which will auto pull any changes
- 
-Copyright © Optimized Payments Inc. All rights reserved. <br></br>
+  <br></br>
 Created by Alexander Fields 
 
 <h2>
