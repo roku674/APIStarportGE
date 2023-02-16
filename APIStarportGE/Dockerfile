@@ -18,6 +18,5 @@ RUN dotnet publish "APIStarportGE.csproj" -c Release -o /app/publish /p:UseAppHo
 
 FROM base AS final
 WORKDIR /app
-ENV ASPNETCORE_URLS="https://+:443;http://+:80"
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "APIStarportGE.dll"]
