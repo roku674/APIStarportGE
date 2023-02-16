@@ -46,7 +46,7 @@ namespace APIStarportGE.Controllers
             }
         }
 
-        [HttpGet("getcolonybyname")]
+        [HttpGet("getbyname")]
         public ActionResult GetByName(string name, string server)
         {
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
@@ -103,7 +103,7 @@ namespace APIStarportGE.Controllers
         }
 
         // POST api/<FileController>
-        [HttpPost("postcolony")]
+        [HttpPost("post")]
         public IActionResult PostCol([FromBody] Holding holding, string server)
         {
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
@@ -128,7 +128,7 @@ namespace APIStarportGE.Controllers
         }
 
         // PUT api/<FileController>/5
-        [HttpPut("putcolony")]
+        [HttpPut("put")]
         public IActionResult PutCol([FromBody] Holding holding, string server)
         {
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
