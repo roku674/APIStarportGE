@@ -71,7 +71,7 @@ namespace APIStarportGE.Controllers
             }
         }
 
-        [HttpGet("getplanet")]
+        [HttpGet("getplanetbyname")]
         public ActionResult GetPlanet(string name, string server)
         {
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
