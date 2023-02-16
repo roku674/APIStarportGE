@@ -18,7 +18,8 @@ namespace APIStarportGE
 {
     internal class Program
     {
-        private static int retries = 0;
+        private static uint retries = 0;
+        private const uint maxRetries = 5;
 
         public static string configJson = Directory.GetCurrentDirectory() + "/config.json";
         public static List<LogMessage> Logs { get; set; }
@@ -64,8 +65,11 @@ namespace APIStarportGE
             catch(System.Exception ex)
             {
                 Logs.Add(new LogMessage("Main", MessageType.Critical, $"{LogMessage.MessageSourceSetter} has failed on attempt {retries} attempting to restart! {ex}"));
-                retries++;
-                Main(args);
+                if(retries < maxRetries)
+                {
+                    retries++;
+                    Main(args);
+                }
             }
 
         }
