@@ -115,9 +115,11 @@ namespace APIStarportGE.Controllers
 
             UpdateResult result = fileModel.UpdateCsv(file);
             Thread colonyThread = new Thread(colonyModel.StartColonyUpdates);
-            Thread GalaxyThread = new Thread(galaxyModel.StartGalaxyUpdates);
+            Thread galaxyThread = new Thread(galaxyModel.StartGalaxyUpdates);
 
             colonyThread.Start();
+            galaxyThread.Start();
+
             if (result.IsAcknowledged)
             {
                 return Ok(result);
