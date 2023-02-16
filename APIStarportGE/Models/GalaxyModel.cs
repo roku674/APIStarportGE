@@ -262,5 +262,33 @@ namespace APIStarportGE.Models
 
             return result;
         }
+
+        public void StartGalaxyUpdates()
+        {
+            HoldingsFileModel fileModel = new HoldingsFileModel(databaseName);
+
+            string month = "";
+            string day = "";
+
+            if (DateTime.Now.Month < 10)
+            {
+                month = "0" + DateTime.Now.Month;
+            }
+            else
+            {
+                month = DateTime.Now.Month.ToString();
+            }
+            if (DateTime.Now.Day < 10)
+            {
+                day = "0" + DateTime.Now.Day;
+            }
+            else
+            {
+                day = DateTime.Now.Day.ToString();
+            }
+
+            List<FileObj> files = fileModel.GetCsv($"holdings_{DateTime.Now.Year}{month}{day}.csv");
+            RunUpdateGalaxyColonies(files[0].FileContents);
+        }
     }
 }

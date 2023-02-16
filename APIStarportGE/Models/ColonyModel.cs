@@ -327,9 +327,7 @@ namespace APIAccount.Models
             }
 
             List<FileObj> files = fileModel.GetCsv($"holdings_{DateTime.Now.Year}{month}{day}.csv");
-            //List<FileObj> files = fileModel.GetCsv($"holdings_{DateTime.Now.Year}{DateTime.Now.Month}13.csv");
 
-            galaxyModel.RunUpdateGalaxyColonies(files[0].FileContents);
             RunUpdateHoldings(files[0].FileContents);
         }
     }

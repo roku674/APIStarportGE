@@ -110,12 +110,14 @@ namespace APIStarportGE.Controllers
 
             }
             HoldingsFileModel fileModel = new HoldingsFileModel(database);
-            ColonyModel colonyModel = new ColonyModel(database);        
+            ColonyModel colonyModel = new ColonyModel(database);
+            GalaxyModel galaxyModel = new GalaxyModel(database);
 
             UpdateResult result = fileModel.UpdateCsv(file);
-            Thread newThread = new Thread(colonyModel.StartColonyUpdates);
+            Thread colonyThread = new Thread(colonyModel.StartColonyUpdates);
+            Thread GalaxyThread = new Thread(galaxyModel.StartGalaxyUpdates);
 
-            newThread.Start();
+            colonyThread.Start();
             if (result.IsAcknowledged)
             {
                 return Ok(result);
