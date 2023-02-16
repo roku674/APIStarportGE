@@ -28,25 +28,5 @@ namespace APIStarportGE.Controllers
             return Content(LogMessage.MessageSourceSetter);
         }
 
-        [HttpPost("postlog")]
-        public IActionResult PostLogAzure([FromBody] List<LogMessage> logMessages)
-        {
-            if (logMessages.Count <= 0)
-            {
-                return BadRequest("Empty");
-            }
-
-            /*Task.Run(() => model.CheckForCrits(logMessages));
-
-            int result = model.InsertLogAzure(logMessages);
-
-            if (result >= 0)
-            {
-                return StatusCode(result);
-            }*/
-
-            return StatusCode(500);
-        }
-
     }
 }

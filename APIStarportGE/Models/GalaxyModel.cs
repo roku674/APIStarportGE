@@ -127,7 +127,7 @@ namespace APIStarportGE.Models
                         }
                         location = location.Trim();
 
-                        Planet planet = new Planet(holding.Location, holding.Owner, holding.Population.ToString(), holding.Morale.ToString(), 0, holding, true, false, null, null);
+                        Planet planet = new Planet(holding,0, 0, true, false, holding.Morale.ToString(), holding.Name, holding.Owner, holding.Population.ToString(), null, null);
                         List<Planet> planets = new List<Planet>();
                         planets.Add(planet);
 
@@ -149,7 +149,7 @@ namespace APIStarportGE.Models
                         Planet planet = starSystem.Planets.Find(p => p.Name == holding.Location);
                         if (planet == null)
                         {
-                            planet = new Planet(holding.Location, holding.Owner, holding.Population.ToString(), holding.Morale.ToString(), 0, holding, true, false, null, null);
+                            planet = new Planet(holding, 0, 0, true, false, holding.Morale.ToString(), holding.Name, holding.Owner, holding.Population.ToString(), null, null);
 
                             starSystem.Planets.Add(planet);
                         }
@@ -182,6 +182,7 @@ namespace APIStarportGE.Models
             catch (System.Exception exc)
             {
                 System.IO.File.Delete(tempFile);
+                System.Console.WriteLine($"Failed to register complete with {exc}");
             }
         }
 

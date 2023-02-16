@@ -295,6 +295,7 @@ namespace APIAccount.Models
             }
             catch (System.Exception exc)
             {
+                System.Console.WriteLine(exc.ToString());
                 System.IO.File.Delete(tempFile);
             }
 
