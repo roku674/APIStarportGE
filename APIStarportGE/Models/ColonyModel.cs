@@ -331,7 +331,7 @@ namespace APIAccount.Models
 
             while (files.Count <= 0)
             {
-                System.Console.WriteLine($"{day}/{month}/{DateTime.Now.Year} wasn't found!");
+                System.Console.WriteLine($"{month}/{day}/{DateTime.Now.Year} wasn't found!");
                 int dayInt = int.Parse(day);
                 int monthInt = int.Parse(month);
                 if (dayInt > 1)
@@ -361,7 +361,7 @@ namespace APIAccount.Models
                 }
                 files = fileModel.GetCsv($"holdings_{DateTime.Now.Year}{month}{day}.csv");
             }
-            System.Console.WriteLine($"Attempting to pull csv for {day}/{month}/{DateTime.Now.Year} ...");
+            System.Console.WriteLine($"Attempting to pull csv for {month}/{day}/{DateTime.Now.Year} ...");
             RunUpdateHoldings(files[0].FileContents);
         }
     }
