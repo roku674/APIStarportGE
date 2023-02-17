@@ -123,23 +123,11 @@ namespace APIStarportGE.Models
 
                 foreach (Holding holding in holdings)
                 {
-                    StarSystem starSystem = starSystems.Find(
-                        x => x.Coordinates.X == holding.GalaxyX &&
-                        x.Coordinates.Y == holding.GalaxyY
-                        );
-
+                    StarSystem starSystem = starSystems.Find(s => s.Name == StarSystem.GetSystemNameFromPlanet(holding.Location));
+                        
                     if (starSystem == null)
                     {
-                        string location = holding.Location;
-                        string[] split = holding.Location.Split(" ");
-
-                        location = "";
-
-                        for (int i = 0;i < split.Length - 1;i++)
-                        {
-                            location += split[i] + " ";
-                        }
-                        location = location.Trim();
+                        string location = StarSystem.GetSystemNameFromPlanet(holding.Location);
 
                         Planet planet = new Planet(holding,0, 0, true, false, holding.Morale.ToString(), holding.Name, holding.Owner, holding.Population.ToString(), null, null);
                         List<Planet> planets = new List<Planet>();
@@ -242,7 +230,8 @@ namespace APIStarportGE.Models
             try
             {
                 // if doens't exist Create it
-                if (GetPlanetByName(planet.Name) == null)
+                Planet planetExist = GetPlanetByName(planet.Name);
+                if (planetExist == null)
                 {
                     StarSystem tempSys = new StarSystem();
                     tempSys.Planets.Add(planet);
@@ -273,7 +262,8 @@ namespace APIStarportGE.Models
                 {
                     //if exists get system it belongs to and add to planets
                     StarSystem starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(planet.Name));
-                    starSystem.Planets.Add(planet);
+                    int index = starSystem.Planets.FindIndex(p => p.Name == planet.Name);
+                    starSystem.Planets[index] = planet;
                     result = UpdateStarSystem(starSystem);
                 }
 
