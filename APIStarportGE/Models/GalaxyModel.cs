@@ -40,10 +40,25 @@ namespace APIStarportGE.Models
             Planet planet = null;
             try
             {
-                planet = collection.AsQueryable()
-                                   .Where(sys => sys.Planets.Any(planet => planet.Name == name))
-                                   .Select(sys => sys.Planets.FirstOrDefault(planet => planet.Name == name))
-                                   .FirstOrDefault();
+                StarSystem starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(name));
+
+                if(starSystem != null)
+                {
+                    planet = starSystem.Planets.Find(p => p.Name == name);
+
+                    if (planet == null)
+                    {
+                        planet = new Planet();
+                        planet.Name = name;
+                        starSystem.Planets.Add(planet);
+                        UpdateStarSystem(starSystem);
+
+                        //after the update need to do this again 
+                        starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(name));
+                        planet = starSystem.Planets.Find(p => p.Name == name);
+                    }
+                }
+
             }
             catch (System.Exception e)
             {
@@ -51,7 +66,6 @@ namespace APIStarportGE.Models
             }
             return planet;
         }
-
 
         public StarSystem GetSystemByName(string name)
         {
