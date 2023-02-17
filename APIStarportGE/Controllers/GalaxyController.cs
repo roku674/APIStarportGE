@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Optimization.Objects;
 using StarportObjects;
+using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
@@ -18,6 +19,7 @@ namespace APIStarportGE.Controllers
         [HttpGet("getgalaxy")]
         public ActionResult GetGalaxy(string server)
         {
+            try{
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
             if (string.IsNullOrEmpty(database))
@@ -41,11 +43,18 @@ namespace APIStarportGE.Controllers
             {
                 return StatusCode(503);
             }
+            }
+            catch (System.Exception e)
+            {
+                return StatusCode(500);
+                Console.WriteLine(e);
+            }
         }
 
         [HttpGet("getsystembyname")]
         public ActionResult GetSystemByName(string name, string server)
         {
+            try{
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
             if (string.IsNullOrEmpty(database))
@@ -69,11 +78,18 @@ namespace APIStarportGE.Controllers
             {
                 return StatusCode(503);
             }
+            }
+            catch (System.Exception e)
+            {
+                return StatusCode(500);
+                Console.WriteLine(e);
+            }
         }
 
         [HttpGet("getplanetbyname")]
         public ActionResult GetPlanet(string name, string server)
         {
+            try{
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
             if (string.IsNullOrEmpty(database))
@@ -97,11 +113,18 @@ namespace APIStarportGE.Controllers
             {
                 return StatusCode(503);
             }
+            }
+            catch (System.Exception e)
+            {
+                return StatusCode(500);
+                Console.WriteLine(e);
+            }
         }
 
         [HttpPut("putsystem")]
         public IActionResult Put([FromBody] StarSystem starSystem, string server)
         {
+            try{
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
             if (string.IsNullOrEmpty(database))
@@ -121,11 +144,18 @@ namespace APIStarportGE.Controllers
             {
                 return StatusCode(503);
             }
+            }
+            catch (System.Exception e)
+            {
+                return StatusCode(500);
+                Console.WriteLine(e);
+            }
         }
 
         [HttpPut("putplanet")]
         public IActionResult Put([FromBody] Planet planet, string server)
         {
+            try{
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
             if (string.IsNullOrEmpty(database))
@@ -144,6 +174,12 @@ namespace APIStarportGE.Controllers
             else
             {
                 return StatusCode(503);
+            }
+            }
+            catch (System.Exception e)
+            {
+                return StatusCode(500);
+                Console.WriteLine(e);
             }
         }
 

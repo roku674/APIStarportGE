@@ -49,6 +49,8 @@ namespace APIStarportGE.Controllers
         [HttpGet("getbyname")]
         public ActionResult GetByName(string name, string server)
         {
+            try
+            {       
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
             if (string.IsNullOrEmpty(database))
@@ -72,11 +74,22 @@ namespace APIStarportGE.Controllers
             {
                 return StatusCode(503);
             }
+            }
+            catch (System.Exception e)
+            {
+                return StatusCode(500);
+                Console.WriteLine(e);
+            }
+
         }
 
         [HttpGet("getcoloniesbysystem")]
         public ActionResult GetBySystem(string name, string server)
         {
+            try
+            {
+
+            
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
             if (string.IsNullOrEmpty(database))
@@ -100,12 +113,22 @@ namespace APIStarportGE.Controllers
             {
                 return StatusCode(503);
             }
+            }
+            catch (System.Exception e)
+            {
+                return StatusCode(500);
+                Console.WriteLine(e);
+            }
         }
 
         // POST api/<FileController>
         [HttpPost("post")]
         public IActionResult PostCol([FromBody] Holding holding, string server)
         {
+            try
+            {
+
+            
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
             if (string.IsNullOrEmpty(database))
@@ -125,12 +148,19 @@ namespace APIStarportGE.Controllers
             {
                 return StatusCode(503);
             }
+            }
+            catch (System.Exception e)
+            {
+                return StatusCode(500);
+                Console.WriteLine(e);
+            }
         }
 
         // PUT api/<FileController>/5
         [HttpPut("put")]
         public IActionResult PutCol([FromBody] Holding holding, string server)
         {
+            try{
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
             if (string.IsNullOrEmpty(database))
@@ -150,12 +180,19 @@ namespace APIStarportGE.Controllers
             {
                 return StatusCode(503);
             }
+            }
+            catch (System.Exception e)
+            {
+                return StatusCode(500);
+                Console.WriteLine(e);
+            }
         }
 
         // DELETE api/<FileController>/5
         [HttpDelete("deleteByName")]
         public IActionResult Delete(string name, string server)
         {
+            try{
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
             if (string.IsNullOrEmpty(database))
@@ -182,6 +219,12 @@ namespace APIStarportGE.Controllers
             else
             {
                 return StatusCode(503);
+            }
+            }
+            catch (System.Exception e)
+            {
+                return StatusCode(500);
+                Console.WriteLine(e);
             }
         }
     }
