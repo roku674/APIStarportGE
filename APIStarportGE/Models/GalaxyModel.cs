@@ -241,6 +241,7 @@ namespace APIStarportGE.Models
             UpdateResult result = null;
             try
             {
+                // if doens't exist Create it
                 if (GetPlanetByName(planet.Name) == null)
                 {
                     StarSystem tempSys = new StarSystem();
@@ -250,6 +251,7 @@ namespace APIStarportGE.Models
 
                     StarSystem starSystem = GetSystemByName(systemName);
 
+                    //if star system doesn't exist create it
                     if(starSystem == null)
                     {
                         Coordinate coords = new Coordinate();
@@ -266,6 +268,13 @@ namespace APIStarportGE.Models
                         starSystem.Planets.Add(planet);
                         result = UpdateStarSystem(starSystem);
                     }
+                }
+                else
+                {
+                    //if exists get system it belongs to and add to planets
+                    StarSystem starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(planet.Name));
+                    starSystem.Planets.Add(planet);
+                    result = UpdateStarSystem(starSystem);
                 }
 
             }
