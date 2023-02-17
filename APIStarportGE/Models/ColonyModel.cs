@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 using APIStarportGE.Models;
 using System.Xml.Linq;
+using System.Reflection;
 
 namespace APIAccount.Models
 {
@@ -328,6 +329,39 @@ namespace APIAccount.Models
 
             List<FileObj> files = fileModel.GetCsv($"holdings_{DateTime.Now.Year}{month}{day}.csv");
 
+            while (files.Count <= 0)
+            {
+                System.Console.WriteLine($"{day}/{month}/{DateTime.Now.Year} wasn't found!");
+                int dayInt = int.Parse(day);
+                int monthInt = int.Parse(month);
+                if (dayInt > 1)
+                {
+                    dayInt--;
+                }
+                else
+                {
+                    monthInt--;
+                    dayInt = 31;
+                }
+                if (monthInt < 10)
+                {
+                    month = "0" + DateTime.Now.Month;
+                }
+                else
+                {
+                    month = DateTime.Now.Month.ToString();
+                }
+                if (dayInt < 10)
+                {
+                    day = "0" + DateTime.Now.Day;
+                }
+                else
+                {
+                    day = DateTime.Now.Day.ToString();
+                }
+                files = fileModel.GetCsv($"holdings_{DateTime.Now.Year}{month}{day}.csv");
+            }
+            System.Console.WriteLine($"Attempting to pull csv for {day}/{month}/{DateTime.Now.Year} ...");
             RunUpdateHoldings(files[0].FileContents);
         }
     }
