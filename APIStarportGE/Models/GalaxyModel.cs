@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Optimization.Objects;
+using Optimization.Objects.Logging;
 using Optimization.Utility;
 using StarportObjects;
 using System;
@@ -32,6 +33,7 @@ namespace APIStarportGE.Models
             else
             {
                 System.Console.WriteLine("ERROR: database was not found!");
+                Program.Logs.Add(new LogMessage("ColonyModel", MessageType.Critical, "Database Not Found!"));
             }
         }
 
@@ -179,12 +181,14 @@ namespace APIStarportGE.Models
                 }
 
                 System.IO.File.Delete(tempFile);
+                Program.Logs.Add(new LogMessage("RunUpdateGalaxyColonies", MessageType.Success, "Ran to completion."));
             }
             catch (System.Exception exc)
             {
                 System.IO.File.Delete(tempFile);
-                System.Console.WriteLine($"Failed to register complete with {exc}");
+                Program.Logs.Add(new LogMessage("RunUpdateGalaxyColonies", MessageType.Error, exc.ToString()));
             }
+
         }
 
         public UpdateResult UpdateStarSystem(StarSystem starSystem)
@@ -217,7 +221,7 @@ namespace APIStarportGE.Models
             }
             catch (System.Exception e)
             {
-                System.Console.WriteLine($"Failed to register complete with {e}");
+                Program.Logs.Add(new LogMessage("UpdateStarSystem", MessageType.Error, e.ToString()));
             }
 
             return result;
@@ -269,7 +273,7 @@ namespace APIStarportGE.Models
             }
             catch (System.Exception e)
             {
-                System.Console.WriteLine($"Failed to register complete with {e}");
+                Program.Logs.Add(new LogMessage("UpdatePlanet", MessageType.Error, e.ToString()));
             }
 
             return result;
@@ -277,6 +281,7 @@ namespace APIStarportGE.Models
 
         public void StartGalaxyUpdates()
         {
+            Program.Logs.Add(new LogMessage("StartGalaxyUpdates", MessageType.Message, "Starting Galaxy Updates"));
             HoldingsFileModel fileModel = new HoldingsFileModel(databaseName);
 
             string month = "";

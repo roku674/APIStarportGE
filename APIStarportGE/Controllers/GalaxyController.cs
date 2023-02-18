@@ -4,6 +4,7 @@ using APIStarportGE.Models;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Optimization.Objects;
+using Optimization.Objects.Logging;
 using StarportObjects;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logs.Add(new LogMessage("GalaxyContrller.GetGalaxy", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
         }
@@ -81,7 +82,7 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logs.Add(new LogMessage("GalaxyContrller.GetSystemByName", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
         }
@@ -116,7 +117,7 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logs.Add(new LogMessage("GalaxyContrller.GetPlanet", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
         }
@@ -147,7 +148,7 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logs.Add(new LogMessage("GalaxyContrller.Put(StarSystem, string)", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
         }
@@ -178,7 +179,7 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logs.Add(new LogMessage("GalaxyContrller.Put(Planet, string)", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
         }

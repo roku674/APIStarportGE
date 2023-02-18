@@ -2,8 +2,6 @@
 //Created by Alexander Fields 
 
 using Optimization.Objects;
-using Optimization.Objects.Logging;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 

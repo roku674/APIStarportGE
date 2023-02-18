@@ -2,6 +2,7 @@
 
 using MongoDB.Driver;
 using Optimization.Objects;
+using Optimization.Objects.Logging;
 using StarportObjects;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace APIStarportGE.Models
             else
             {
                 System.Console.WriteLine("ERROR: database was not found!");
+                Program.Logs.Add(new LogMessage("ColonyModel", MessageType.Critical, "Database Not Found!"));
             }
         }
 

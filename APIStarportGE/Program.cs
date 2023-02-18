@@ -4,15 +4,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MongoDB.Bson.IO;
-using Optimization.Encryption;
 using Optimization.Objects;
 using Optimization.Objects.Logging;
 using Optimization.Utility;
-using StarportObjects;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
+using System.Net.Mail;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace APIStarportGE
 {
@@ -20,6 +19,7 @@ namespace APIStarportGE
     {
         private static uint retries = 0;
         private const uint maxRetries = uint.MaxValue-1;
+        public static bool isCancelled { get;set; }
 
         public static string configJson = Directory.GetCurrentDirectory() + "/config.json";
         public static List<LogMessage> Logs { get; set; }
@@ -30,6 +30,7 @@ namespace APIStarportGE
             Logs = new List<LogMessage>();
             string configContents = File.ReadAllText(configJson);
             Settings.BuildAndSetConfig(configJson);
+            isCancelled = true;
 
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +59,8 @@ namespace APIStarportGE
             System.Console.WriteLine(LogMessage.MessageSourceSetter + " is now running!");
             Logs.Add(new LogMessage("Main", MessageType.Success, LogMessage.MessageSourceSetter + " Successfully booted up!"));
 
+            ThreadPool.QueueUserWorkItem(Updater);
+
             try
             {
                 app.Run();
@@ -72,6 +75,51 @@ namespace APIStarportGE
                 }
             }
 
+        }
+
+        private async static void Updater(object state)
+        {
+            isCancelled = false;
+            System.Console.WriteLine("Updater is running...");
+
+            while(System.DateTime.Now.Minute != 0)
+            {
+                await Task.Delay(60000);
+            }
+
+            while (true)
+            {
+                if (isCancelled)
+                {
+                    break;
+                }
+                _ = Task.Run(() => EmailLogsAndClear());
+                await Task.Delay(System.TimeSpan.FromHours(1));
+            }
+        }
+
+        internal static void EmailLogsAndClear()
+        {
+            Mailing messaging = new Mailing();
+
+            string emailBody = Utility.ConvertDataTableToHTML(Utility.ConvertListToDataTable(Logs), 3, 2 ,1, null);
+
+            SmtpClient client = messaging.CreateSmtpClient(
+                Settings.Configuration["Smtp:server"],
+                Settings.Configuration["Smtp:email"],
+                Utility.DecodeString(Settings.Configuration["Smtp:password"]),
+                int.Parse(Settings.Configuration["Smtp:port"]));
+
+            MailMessage email = messaging.CreateEmail(
+                Settings.Configuration["Smtp:to"],
+                Settings.Configuration["Smtp:email"],
+                "Logging Updates", 
+                emailBody,
+                true,
+                new List<string>()
+                );
+
+            client.Send(email);
         }
     }
 }

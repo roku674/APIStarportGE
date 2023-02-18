@@ -16,6 +16,8 @@ using static System.Net.WebRequestMethods;
 using APIStarportGE.Models;
 using System.Xml.Linq;
 using System.Reflection;
+using APIStarportGE;
+using Optimization.Objects.Logging;
 
 namespace APIAccount.Models
 {
@@ -38,6 +40,7 @@ namespace APIAccount.Models
             else
             {
                 System.Console.WriteLine("ERROR: database was not found!");
+                Program.Logs.Add(new LogMessage("ColonyModel", MessageType.Critical, "Database Not Found!"));
             }
         }
 
@@ -55,7 +58,7 @@ namespace APIAccount.Models
             }
             catch (System.Exception e)
             {
-                System.Console.WriteLine($"Failed to register complete with {e}");
+                Program.Logs.Add(new LogMessage("GetPlanetByName", MessageType.Error, e.ToString()));
             }
             return holding;
         }
@@ -156,7 +159,7 @@ namespace APIAccount.Models
             }
             catch (System.Exception e)
             {
-                System.Console.WriteLine($"Failed to register complete with {e}");
+                Program.Logs.Add(new LogMessage("UpdateHolding", MessageType.Error, e.ToString()));
             }
 
             return result;
@@ -241,7 +244,7 @@ namespace APIAccount.Models
             }
             catch (System.Exception e)
             {
-                System.Console.WriteLine($"Failed to register complete with {e}");
+                Program.Logs.Add(new LogMessage("UpdateHoldings", MessageType.Error, e.ToString()));
             }
 
             return result;
@@ -256,7 +259,7 @@ namespace APIAccount.Models
             }
             catch (System.Exception e)
             {
-                System.Console.WriteLine($"Failed to register complete with {e}");
+                Program.Logs.Add(new LogMessage("DeleteColony", MessageType.Error, e.ToString()));
             }
             return result;
         }
@@ -293,10 +296,11 @@ namespace APIAccount.Models
                 UpdateHoldings(holdings);
 
                 System.IO.File.Delete(tempFile);
+                Program.Logs.Add(new LogMessage("RunUpdateGalaxyColonies", MessageType.Success, "Ran to completion."));
             }
             catch (System.Exception exc)
             {
-                System.Console.WriteLine(exc.ToString());
+                Program.Logs.Add(new LogMessage("RunUpdateHoldings", MessageType.Error, exc.ToString()));
                 System.IO.File.Delete(tempFile);
             }
 

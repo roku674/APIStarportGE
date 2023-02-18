@@ -6,6 +6,7 @@ using APIStarportGE.Models;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Optimization.Objects;
+using Optimization.Objects.Logging;
 using StarportObjects;
 using System;
 using System.Collections.Generic;
@@ -77,7 +78,7 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logs.Add(new LogMessage("ColoniesContrller.GetByName", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
 
@@ -116,7 +117,7 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logs.Add(new LogMessage("ColoniesContrller.GetBySystem", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
         }
@@ -151,7 +152,7 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logs.Add(new LogMessage("ColoniesContrller.PostCol", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
         }
@@ -183,7 +184,7 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
         }
@@ -223,7 +224,7 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
+                Program.Logs.Add(new LogMessage("ColoniesContrller.Delete", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
         }
