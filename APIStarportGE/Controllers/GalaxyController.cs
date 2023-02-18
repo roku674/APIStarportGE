@@ -138,8 +138,9 @@ namespace APIStarportGE.Controllers
             UpdateResult result = galaxyModel.UpdateStarSystem(starSystem);
 
             if (result.IsAcknowledged)
-            {
-                return Ok(result);
+                {
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {starSystem.Name}"));
+                    return Ok(result);
             }
             else
             {
@@ -169,8 +170,10 @@ namespace APIStarportGE.Controllers
             UpdateResult result = galaxyModel.UpdatePlanet(planet);
 
             if (result.IsAcknowledged)
-            {
-                return Ok(result);
+                {
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {planet.Name}"));
+
+                    return Ok(result);
             }
             else
             {

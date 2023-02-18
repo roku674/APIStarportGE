@@ -27,7 +27,6 @@ namespace APIStarportGE.Controllers
             if (string.IsNullOrEmpty(database))
             {
                 return BadRequest($"{server} was not a valid server!");
-
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
@@ -142,8 +141,9 @@ namespace APIStarportGE.Controllers
             bool succeeded = colonyModel.InsertHolding(holding);
 
             if (succeeded)
-            {
-                return Ok(succeeded);
+                {
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {holding.Location}"));
+                    return Ok(succeeded);
             }
             else
             {
@@ -161,26 +161,28 @@ namespace APIStarportGE.Controllers
         [HttpPut("put")]
         public IActionResult PutCol([FromBody] Holding holding, string server)
         {
-            try{
-            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
-
-            if (string.IsNullOrEmpty(database))
+            try
             {
-                return BadRequest($"{server} was not a valid server!");
+                string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
-            }
-            ColonyModel colonyModel = new ColonyModel(database);
+                if (string.IsNullOrEmpty(database))
+                {
+                    return BadRequest($"{server} was not a valid server!");
 
-            UpdateResult result = colonyModel.UpdateHolding(holding);
+                }
+                ColonyModel colonyModel = new ColonyModel(database);
 
-            if (result.IsAcknowledged)
-            {
-                return Ok(result);
-            }
-            else
-            {
-                return StatusCode(503);
-            }
+                UpdateResult result = colonyModel.UpdateHolding(holding);
+
+                if (result.IsAcknowledged)
+                {
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {holding.Location}"));
+                    return Ok(result);
+                }
+                else
+                {
+                    return StatusCode(503);
+                }
             }
             catch (System.Exception e)
             {
@@ -214,7 +216,8 @@ namespace APIStarportGE.Controllers
                 return StatusCode(404, $"No planet was found by {name}");
             }
             else if (result.DeletedCount > 0)
-            {
+                {
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"Deleted {name}"));
                 return Ok("Deleted: " + result.DeletedCount + "planet(s)");
             }
             else

@@ -105,8 +105,10 @@ namespace APIStarportGE.Controllers
             bool suceeded = fileModel.InsertFile(file);
 
             if (suceeded)
-            {
-                return Ok();
+                {
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {file.FileName}"));
+
+                    return Ok();
             }
             else
             {
@@ -144,8 +146,10 @@ namespace APIStarportGE.Controllers
             galaxyThread.Start();
 
             if (result.IsAcknowledged)
-            {
-                return Ok(result);
+                {
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {file.FileName}"));
+
+                    return Ok(result);
             }
             else
             {
@@ -184,8 +188,10 @@ namespace APIStarportGE.Controllers
                 return StatusCode(404, $"No file was found by {name}");
             }
             else if (result.DeletedCount > 0)
-            {
-                return Ok("Deleted: " + result.DeletedCount + "file(s)");
+                {
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"Deleted {name}"));
+
+                    return Ok("Deleted: " + result.DeletedCount + "file(s)");
             }
             else
             {
