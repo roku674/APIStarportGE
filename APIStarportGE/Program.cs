@@ -102,7 +102,12 @@ namespace APIStarportGE
         {
             Mailing messaging = new Mailing();
 
-            string emailBody = Utility.ConvertDataTableToHTML(Utility.ConvertListToDataTable(Logs), 3, 2 ,1, null);
+            string emailBody = "<h2>Nothing to report!</h2>";
+
+            if(Logs.Count > 0)
+            {
+                emailBody = Utility.ConvertDataTableToHTML(Utility.ConvertListToDataTable(Logs), 3, 2, 1, null);
+            }
 
             SmtpClient client = messaging.CreateSmtpClient(
                 Settings.Configuration["Smtp:server"],
