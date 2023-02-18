@@ -120,6 +120,8 @@ namespace APIStarportGE
                 );
 
             client.Send(email);
+
+            Logs = new List<LogMessage>();
         }
     }
 }
