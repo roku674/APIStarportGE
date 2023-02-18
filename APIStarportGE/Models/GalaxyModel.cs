@@ -155,7 +155,6 @@ namespace APIStarportGE.Models
 
                             starSystem.Planets.Add(planet);
                         }
-
                     }
                 }
 

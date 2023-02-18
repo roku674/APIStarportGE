@@ -46,8 +46,8 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                return StatusCode(500);
                 Console.WriteLine(e);
+                return StatusCode(500);
             }
         }
 
@@ -81,8 +81,8 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                return StatusCode(500);
                 Console.WriteLine(e);
+                return StatusCode(500);
             }
         }
 
@@ -116,8 +116,8 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                return StatusCode(500);
                 Console.WriteLine(e);
+                return StatusCode(500);
             }
         }
 
@@ -147,8 +147,8 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                return StatusCode(500);
                 Console.WriteLine(e);
+                return StatusCode(500);
             }
         }
 
@@ -178,8 +178,8 @@ namespace APIStarportGE.Controllers
             }
             catch (System.Exception e)
             {
-                return StatusCode(500);
                 Console.WriteLine(e);
+                return StatusCode(500);
             }
         }
 
