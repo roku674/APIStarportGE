@@ -74,7 +74,7 @@ namespace APIStarportGE.Models
             StarSystem system = null;
             try
             {
-                system = collection.AsQueryable().Where(x => x.Name == name).FirstOrDefault();
+                system = collection.Find(x => x.Name == name).FirstOrDefault();                             
             }
             catch (System.Exception e)
             {
@@ -233,15 +233,15 @@ namespace APIStarportGE.Models
             try
             {
                 // if doens't exist Create it
-                Planet planetExist = GetPlanetByName(planet.Name);
+                StarSystem starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(planet.Name));
+                Planet planetExist = starSystem.Planets.Find(p => p.Name == planet.Name);
+
                 if (planetExist == null)
                 {
                     StarSystem tempSys = new StarSystem();
                     tempSys.Planets = new List<Planet>{planet};
 
                     string systemName = tempSys.GetSystemNameFromPlanet(planet);
-
-                    StarSystem starSystem = GetSystemByName(systemName);
 
                     //if star system doesn't exist create it
                     if(starSystem == null)
@@ -264,12 +264,11 @@ namespace APIStarportGE.Models
                 else
                 {
                     //if exists get system it belongs to and add to planets
-                    StarSystem starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(planet.Name));
+                    starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(planet.Name));
                     int index = starSystem.Planets.FindIndex(p => p.Name == planet.Name);
                     starSystem.Planets[index] = planet;
                     result = UpdateStarSystem(starSystem);
                 }
-
             }
             catch (System.Exception e)
             {
