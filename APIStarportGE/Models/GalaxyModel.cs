@@ -237,8 +237,7 @@ namespace APIStarportGE.Models
                 if (planetExist == null)
                 {
                     StarSystem tempSys = new StarSystem();
-                    tempSys.Planets = new List<Planet>();
-                    tempSys.Planets.Add(planet);
+                    tempSys.Planets = new List<Planet>{planet};
 
                     string systemName = tempSys.GetSystemNameFromPlanet(planet);
 
