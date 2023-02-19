@@ -289,6 +289,7 @@ namespace APIAccount.Models
             try
             {
                 collection.DeleteMany(Builders<Holding>.Filter.Eq(f => f.Location, name));
+                System.Console.WriteLine("Deleted Colony: " + name);
             }
             catch (System.Exception e)
             {
@@ -323,6 +324,7 @@ namespace APIAccount.Models
                 int removed = 0;
                 foreach(Holding holding in dontExist)
                 {
+                    DeleteColony(holding.Location);
                     removed+= holdings.RemoveAll(item => item.Location == holding.Location);
                 }
                 
