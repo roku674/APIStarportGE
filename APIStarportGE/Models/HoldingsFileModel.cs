@@ -7,6 +7,7 @@ using StarportObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 
 namespace APIStarportGE.Models
 {
@@ -30,6 +31,7 @@ namespace APIStarportGE.Models
             {
                 System.Console.WriteLine("ERROR: database was not found!");
                 Program.Logs.Add(new LogMessage("ColonyModel", MessageType.Critical, "Database Not Found!"));
+                Program.SendWebhook(new HttpClient(), Newtonsoft.Json.JsonConvert.SerializeObject(new LogMessage("ColonyModel", MessageType.Critical, "Database Not Found!")));
             }
         }
 

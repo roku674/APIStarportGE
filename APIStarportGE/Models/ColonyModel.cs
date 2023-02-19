@@ -18,6 +18,7 @@ using System.Xml.Linq;
 using System.Reflection;
 using APIStarportGE;
 using Optimization.Objects.Logging;
+using System.Net.Http;
 
 namespace APIAccount.Models
 {
@@ -41,6 +42,7 @@ namespace APIAccount.Models
             {
                 System.Console.WriteLine("ERROR: database was not found!");
                 Program.Logs.Add(new LogMessage("ColonyModel", MessageType.Critical, "Database Not Found!"));
+                Program.SendWebhook(new HttpClient(), Newtonsoft.Json.JsonConvert.SerializeObject(new LogMessage("ColonyModel", MessageType.Critical, "Database Not Found!")));
             }
         }
 
