@@ -49,6 +49,37 @@ namespace APIAccount.Models
             return collection.Find(new BsonDocument()).ToList();
         }
 
+        public List<string> GetBuildables()
+        {
+            List<Holding> holdings = collection.Find(h => h.Population <= 1000).ToList();
+
+            List<string> planetNames = new List<string>();
+            foreach(Holding holding in holdings)
+            {
+                bool adding = false;
+                if (holding.Discoveries.Contains("Arch lvl 5"))
+                    adding = true;
+                else if (holding.Discoveries.Contains("Arch lvl 4") && holding.PlanetType != "mountainous" && holding.PlanetType != "desert")
+                    adding = true;
+                else if (holding.Discoveries.Contains("Arch lvl 3") && holding.PlanetType != "mountainous" && holding.PlanetType != "desert" && holding.PlanetType != "volcanic")
+                    adding = true;
+                else if (holding.Discoveries.Contains("Arch lvl 2") && holding.PlanetType == "arctic")
+                    adding = true;
+                else if (holding.Discoveries.Contains("MT lvl 3") || holding.Discoveries.Contains("MT lvl 4") || holding.Discoveries.Contains("MT lvl 5"))
+                    adding = true;
+                else if ((holding.Discoveries.Contains("Ore 3") || holding.Discoveries.Contains("Ore 4") || holding.Discoveries.Contains("Ore 5")) && holding.PlanetType != "rocky")
+                    adding = true;
+                else if (holding.Discoveries.Contains("WP 3") || holding.Discoveries.Contains("WP 2"))
+                    adding = true;
+
+                if (adding)
+                {
+                    planetNames.Add(holding.Location);
+                }
+            }
+            return planetNames;
+        }
+
         public Holding GetPlanetByName(string planetName)
         {
             Holding holding = null;
