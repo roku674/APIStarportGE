@@ -131,7 +131,7 @@ namespace APIStarportGE.Models
                     {
                         string location = StarSystem.GetSystemNameFromPlanet(holding.Location);
 
-                        Planet planet = new Planet(holding,0, 0, true, false, holding.Morale.ToString(), holding.Location, holding.Owner, holding.Population.ToString(), null, null);
+                        Planet planet = new Planet(holding,0, 0, true, false, holding.Morale.ToString(), holding.Location, holding.Owner,holding.PlanetType, holding.Population.ToString(), null, null);
                         List<Planet> planets = new List<Planet>();
                         planets.Add(planet);
 
@@ -153,7 +153,7 @@ namespace APIStarportGE.Models
                         Planet planet = starSystem.Planets.Find(p => p.Name == holding.Location);
                         if (planet == null)
                         {
-                            planet = new Planet(holding, 0, 0, true, false, holding.Morale.ToString(), holding.Location, holding.Owner, holding.Population.ToString(), null, null);
+                            planet = new Planet(holding, 0, 0, true, false, holding.Morale.ToString(), holding.Location, holding.Owner,holding.PlanetType, holding.Population.ToString(), null, null);
 
                             starSystem.Planets.Add(planet);
                         }
