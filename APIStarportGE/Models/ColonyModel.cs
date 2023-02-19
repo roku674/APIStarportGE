@@ -339,7 +339,7 @@ namespace APIAccount.Models
 
         }
 
-        public void StartColonyUpdates()
+        public void StartColonyUpdates(object hollerback)
         {
             HoldingsFileModel fileModel = new HoldingsFileModel(databaseName);
             GalaxyModel galaxyModel = new GalaxyModel(databaseName);

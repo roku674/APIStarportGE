@@ -279,7 +279,7 @@ namespace APIStarportGE.Models
             return result;
         }
 
-        public void StartGalaxyUpdates()
+        public void StartGalaxyUpdates(object hollerback)
         {
             Program.Logs.Add(new LogMessage("StartGalaxyUpdates", MessageType.Message, "Starting Galaxy Updates"));
             HoldingsFileModel fileModel = new HoldingsFileModel(databaseName);
