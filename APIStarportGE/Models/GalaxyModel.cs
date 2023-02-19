@@ -305,6 +305,33 @@ namespace APIStarportGE.Models
             }
 
             List<FileObj> files = fileModel.GetCsv($"holdings_{DateTime.Now.Year}{month}{day}.csv");
+            System.DateTime dateTime = new(DateTime.Now.Year, int.Parse(month), int.Parse(day));
+
+            while (files.Count <= 0)
+            {
+                System.Console.WriteLine($"{month}/{day}/{DateTime.Now.Year} wasn't found!");
+
+                dateTime = dateTime.AddDays(-1);
+
+                if (dateTime.Month < 10)
+                {
+                    month = "0" + dateTime.Month;
+                }
+                else
+                {
+                    month = dateTime.Month.ToString();
+                }
+                if (dateTime.Day < 10)
+                {
+                    day = "0" + dateTime.Day;
+                }
+                else
+                {
+                    day = dateTime.Day.ToString();
+                }
+                System.Console.WriteLine($"Attempting holdings_{dateTime.Year}{month}{day}.csv in StartGalaxyUpdates");
+                files = fileModel.GetCsv($"holdings_{dateTime.Year}{month}{day}.csv");
+            }
             RunUpdateGalaxyColonies(files[0].FileContents);
         }
     }

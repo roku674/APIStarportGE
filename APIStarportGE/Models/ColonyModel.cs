@@ -332,40 +332,34 @@ namespace APIAccount.Models
             }
 
             List<FileObj> files = fileModel.GetCsv($"holdings_{DateTime.Now.Year}{month}{day}.csv");
+            System.DateTime dateTime = new(DateTime.Now.Year, int.Parse(month), int.Parse(day));
 
             while (files.Count <= 0)
             {
                 System.Console.WriteLine($"{month}/{day}/{DateTime.Now.Year} wasn't found!");
-                int dayInt = int.Parse(day);
-                int monthInt = int.Parse(month);
-                if (dayInt > 1)
+
+                dateTime = dateTime.AddDays(-1);
+
+                if (dateTime.Month < 10)
                 {
-                    dayInt--;
+                    month = "0" + dateTime.Month;
                 }
                 else
                 {
-                    monthInt--;
-                    dayInt = 31;
+                    month = dateTime.Month.ToString();
                 }
-                if (monthInt < 10)
+                if (dateTime.Day < 10)
                 {
-                    month = "0" + DateTime.Now.Month;
+                    day = "0" + dateTime.Day;
                 }
                 else
                 {
-                    month = DateTime.Now.Month.ToString();
+                    day = dateTime.Day.ToString();
                 }
-                if (dayInt < 10)
-                {
-                    day = "0" + DateTime.Now.Day;
-                }
-                else
-                {
-                    day = DateTime.Now.Day.ToString();
-                }
-                files = fileModel.GetCsv($"holdings_{DateTime.Now.Year}{month}{day}.csv");
+                System.Console.WriteLine($"Attempting holdings_{dateTime.Year}{month}{day}.csv in StartColonyUpdates");
+
+                files = fileModel.GetCsv($"holdings_{dateTime.Year}{month}{day}.csv");
             }
-            System.Console.WriteLine($"Attempting to pull csv for {month}/{day}/{DateTime.Now.Year} ...");
             RunUpdateHoldings(files[0].FileContents);
         }
     }
