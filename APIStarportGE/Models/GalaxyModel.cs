@@ -233,15 +233,14 @@ namespace APIStarportGE.Models
             try
             {
                 // if doens't exist Create it
-                StarSystem starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(planet.Name));
+                string systemName = StarSystem.GetSystemNameFromPlanet(planet.Name);
+                StarSystem starSystem = GetSystemByName(systemName);
                 Planet planetExist = starSystem.Planets.Find(p => p.Name == planet.Name);
 
                 if (planetExist == null)
                 {
                     StarSystem tempSys = new StarSystem();
                     tempSys.Planets = new List<Planet>{planet};
-
-                    string systemName = tempSys.GetSystemNameFromPlanet(planet);
 
                     //if star system doesn't exist create it
                     if(starSystem == null)
@@ -264,7 +263,6 @@ namespace APIStarportGE.Models
                 else
                 {
                     //if exists get system it belongs to and add to planets
-                    starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(planet.Name));
                     int index = starSystem.Planets.FindIndex(p => p.Name == planet.Name);
                     starSystem.Planets[index] = planet;
                     result = UpdateStarSystem(starSystem);
