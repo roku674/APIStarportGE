@@ -77,37 +77,36 @@ namespace APIStarportGE.Controllers
         public ActionResult GetByName(string name, string server)
         {
             try
-            {       
-            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
-
-            if (string.IsNullOrEmpty(database))
             {
-                return BadRequest($"{server} was not a valid server!");
+                string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
-            }
-            ColonyModel colonyModel = new ColonyModel(database);
+                if (string.IsNullOrEmpty(database))
+                {
+                    return BadRequest($"{server} was not a valid server!");
 
-            Holding holding = colonyModel.GetPlanetByName(name);
+                }
+                ColonyModel colonyModel = new ColonyModel(database);
 
-            if (holding != null)
-            {
-                return Ok(holding);
-            }
-            else if (holding == null)
-            {
-                return StatusCode(404, $"No planet was found by {name}");
-            }
-            else
-            {
-                return StatusCode(503);
-            }
+                Holding holding = colonyModel.GetPlanetByName(name.Trim());
+
+                if (holding != null)
+                {
+                    return Ok(holding);
+                }
+                else if (holding == null)
+                {
+                    return StatusCode(404, $"No planet was found by {name}");
+                }
+                else
+                {
+                    return StatusCode(503);
+                }
             }
             catch (System.Exception e)
             {
                 Program.Logs.Add(new LogMessage("ColoniesContrller.GetByName", MessageType.Error, e.ToString()));
                 return StatusCode(500);
             }
-
         }
 
         [HttpGet("getcoloniesbysystem")]
@@ -115,31 +114,29 @@ namespace APIStarportGE.Controllers
         {
             try
             {
+                string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
-            
-            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+                if (string.IsNullOrEmpty(database))
+                {
+                    return BadRequest($"{server} was not a valid server!");
 
-            if (string.IsNullOrEmpty(database))
-            {
-                return BadRequest($"{server} was not a valid server!");
+                }
+                ColonyModel colonyModel = new ColonyModel(database);
 
-            }
-            ColonyModel colonyModel = new ColonyModel(database);
+                List<Holding> holdings = colonyModel.GetPlanetsBySystem(name.Trim());
 
-            List<Holding> holdings = colonyModel.GetPlanetsBySystem(name);
-
-            if (holdings.Count > 0)
-            {
-                return Ok(holdings);
-            }
-            else if (holdings.Count == 0)
-            {
-                return StatusCode(404, $"No planet was found by {name}");
-            }
-            else
-            {
-                return StatusCode(503);
-            }
+                if (holdings.Count > 0)
+                {
+                    return Ok(holdings);
+                }
+                else if (holdings.Count == 0)
+                {
+                    return StatusCode(404, $"No planet was found by {name}");
+                }
+                else
+                {
+                    return StatusCode(503);
+                }
             }
             catch (System.Exception e)
             {
@@ -232,7 +229,7 @@ namespace APIStarportGE.Controllers
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
-            DeleteResult result = colonyModel.DeleteColony(name);
+            DeleteResult result = colonyModel.DeleteColony(name.Trim());
 
             if (result == null)
             {

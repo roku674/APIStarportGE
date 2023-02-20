@@ -205,7 +205,7 @@ namespace APIStarportGE.Models
                 }
 
                 UpdateDefinition<StarSystem> updateDefinition = Builders<StarSystem>.Update
-                    .Set(y => y.Name, starSystem.Name)
+                    .Set(y => y.Name, starSystem.Name.Trim())
                     .Set(y => y.MiniMap , starSystem.MiniMap)
                     .Set(y => y.ConnectedSystems , starSystem.ConnectedSystems)
                     .Set(y => y.Coordinates , starSystem.Coordinates)
@@ -233,6 +233,7 @@ namespace APIStarportGE.Models
         public UpdateResult UpdatePlanet(Planet planet)
         {
             UpdateResult result = null;
+            planet.Name = planet.Name.Trim();
             try
             {
                 // if doens't exist Create it

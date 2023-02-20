@@ -32,7 +32,7 @@ namespace APIStarportGE.Controllers
             }
             HoldingsFileModel fileModel = new HoldingsFileModel(database);
 
-            List<FileObj> files = fileModel.GetCsv(name);
+            List<FileObj> files = fileModel.GetCsv(name.Trim());
 
             if (files.Count > 0)
             {
@@ -174,7 +174,7 @@ namespace APIStarportGE.Controllers
             }
             HoldingsFileModel fileModel = new HoldingsFileModel(database);
 
-            DeleteResult result = fileModel.DeleteCsv(name);
+            DeleteResult result = fileModel.DeleteCsv(name.Trim());
          
             if (result == null)
             {

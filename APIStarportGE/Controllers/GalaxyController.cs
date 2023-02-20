@@ -65,7 +65,7 @@ namespace APIStarportGE.Controllers
             }
             GalaxyModel galaxyModel = new GalaxyModel(database);
 
-            StarSystem starSystem = galaxyModel.GetSystemByName(name);
+            StarSystem starSystem = galaxyModel.GetSystemByName(name.Trim());
 
             if (starSystem != null)
             {
@@ -100,7 +100,7 @@ namespace APIStarportGE.Controllers
             }
             GalaxyModel galaxyModel = new GalaxyModel(database);
 
-            Planet planet = galaxyModel.GetPlanetByName(name);
+            Planet planet = galaxyModel.GetPlanetByName(name.Trim());
 
             if (planet != null)
             {
