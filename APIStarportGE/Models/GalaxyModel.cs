@@ -34,7 +34,7 @@ namespace APIStarportGE.Models
             else
             {
                 System.Console.WriteLine("ERROR: database was not found!");
-                Program.Logs.Add(new LogMessage("ColonyModel", MessageType.Critical, "Database Not Found!"));
+                Program.Logs.Add(new LogMessage("GalaxyModel", MessageType.Critical, "Database Not Found!"));
                 Program.SendWebhook(new HttpClient(), Newtonsoft.Json.JsonConvert.SerializeObject(new LogMessage("ColonyModel", MessageType.Critical, "Database Not Found!")));
 
             }
@@ -46,29 +46,24 @@ namespace APIStarportGE.Models
             try
             {
                 StarSystem starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(name));
-
-                if(starSystem != null)
+                if (starSystem == null)
                 {
-                    planet = starSystem.Planets.Find(p => p.Name == name);
-
-                    if (planet == null)
-                    {
-                        planet = new Planet();
-                        planet.Name = name;
-                        starSystem.Planets.Add(planet);
-                        UpdateStarSystem(starSystem);
-
-                        //after the update need to do this again 
-                        starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(name));
-                        planet = starSystem.Planets.Find(p => p.Name == name);
-                    }
+                    return null;
                 }
-
+                planet = starSystem.Planets.Find(p=> p.Name ==name);
             }
             catch (System.Exception e)
             {
                 System.Console.WriteLine($"Failed to register complete with {e}");
             }
+
+            //if the planet isn't null we can try to get the picture
+
+            if (planet != null)
+            {
+                planet.Picture = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]).GetFile(name + ".png");
+            }
+
             return planet;
         }
 
@@ -83,6 +78,19 @@ namespace APIStarportGE.Models
             {
                 System.Console.WriteLine($"Failed to register complete with {e}");
             }
+
+            if (system != null)
+            {
+                foreach (Planet planet in system.Planets)
+                {
+                    FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]);
+                    if (planet.Picture == null)
+                    {
+                        planet.Picture = fileModel.GetFile(name + ".png");
+                    }
+                }
+            }
+
             return system;
         }
 
@@ -102,6 +110,17 @@ namespace APIStarportGE.Models
 
         public bool InsertStarSystem(StarSystem starSystem)
         {
+            List<Planet> planetsWPictures = starSystem.Planets.FindAll(p => p.Picture != null);
+            if(planetsWPictures.Count > 0)
+            {
+                new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]).UpdatePictures(planetsWPictures);
+            }
+
+            foreach (Planet planet in starSystem.Planets)
+            {
+                planet.Picture = null;
+            }
+
             return Repository.Repository.Insert<StarSystem>(collection, starSystem);
         }
 
@@ -124,21 +143,21 @@ namespace APIStarportGE.Models
 
                 List<Holding> holdings = Utility.ConvertDataTableToList<Holding>(dataTable);
 
-                List<StarSystem> starSystems = GetStarSystems();
-
+                List<StarSystem> starSystems = new List<StarSystem>();
+             
                 foreach (Holding holding in holdings)
                 {
-                    StarSystem starSystem = starSystems.Find(s => s.Name == StarSystem.GetSystemNameFromPlanet(holding.Location));
+                    StarSystem starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(holding.Location));
                         
                     if (starSystem == null)
                     {
-                        string location = StarSystem.GetSystemNameFromPlanet(holding.Location);
+                        string systemName = StarSystem.GetSystemNameFromPlanet(holding.Location);
 
                         Planet planet = new Planet(holding,0, 0, true, false, holding.Morale.ToString(), holding.Location, holding.Owner,holding.PlanetType, holding.Population.ToString(), null, null);
                         List<Planet> planets = new List<Planet>();
                         planets.Add(planet);
 
-                        starSystem = new StarSystem(location,
+                        starSystem = new StarSystem(systemName,
                             0,
                             planets,
                             null,
@@ -149,7 +168,6 @@ namespace APIStarportGE.Models
                             null,
                             new Coordinate(holding.GalaxyX, holding.GalaxyY)
                             );
-                        starSystems.Add(starSystem);
                     }
                     else
                     {
@@ -161,6 +179,7 @@ namespace APIStarportGE.Models
                             starSystem.Planets.Add(planet);
                         }
                     }
+                    starSystems.Add(starSystem);
                 }
 
                 foreach (StarSystem starSystem in starSystems)
@@ -191,7 +210,6 @@ namespace APIStarportGE.Models
                 System.IO.File.Delete(tempFile);
                 Program.Logs.Add(new LogMessage("RunUpdateGalaxyColonies", MessageType.Error, exc.ToString()));
             }
-
         }
 
         public UpdateResult UpdateStarSystem(StarSystem starSystem)
@@ -202,6 +220,16 @@ namespace APIStarportGE.Models
                 if (GetSystemByName(starSystem.Name) == null)
                 {
                     InsertStarSystem(starSystem);
+                }
+
+                List<Planet> planetsWPictures = starSystem.Planets.FindAll(p => p.Picture != null);
+                if (planetsWPictures.Count > 0)
+                {
+                    new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]).UpdatePictures(planetsWPictures);
+                }
+                foreach (Planet planet in starSystem.Planets)
+                {
+                    planet.Picture = null;
                 }
 
                 UpdateDefinition<StarSystem> updateDefinition = Builders<StarSystem>.Update
@@ -239,38 +267,73 @@ namespace APIStarportGE.Models
                 // if doens't exist Create it
                 string systemName = StarSystem.GetSystemNameFromPlanet(planet.Name);
                 StarSystem starSystem = GetSystemByName(systemName);
-                Planet planetExist = starSystem.Planets.Find(p => p.Name == planet.Name);
-
-                if (planetExist == null)
+                FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]);
+                //if star system doesn't exist create it
+                if (starSystem == null)
                 {
-                    StarSystem tempSys = new StarSystem();
-                    tempSys.Planets = new List<Planet>{planet};
+                    starSystem = new StarSystem();
 
-                    //if star system doesn't exist create it
-                    if(starSystem == null)
+                    if(planet.Picture != null)
                     {
+                        fileModel.UpdateFile(planet.Picture);
+                        planet.Picture = null;
+                    }
+                   
+                    starSystem.Planets = new List<Planet> { planet };
+                
+                    starSystem = new StarSystem(systemName, 0, starSystem.Planets, null, null, "", "", null, null, null);
+                    result = UpdateStarSystem(starSystem);
+                }
+                else
+                {
+                    Planet planetExist = starSystem.Planets.Find(p => p.Name == planet.Name);
+
+                    //if planet doens't exist add to star system
+                    if (planetExist == null)
+                    {
+                        starSystem.Planets.Add(planet);
+
+                        //if the planet has a picture sent in with it send it to collection
+                        if (planet.Picture != null)
+                        {
+                            fileModel.UpdateFile(planet.Picture);
+
+                            //we're gonna go ahead and null it out now
+                            planet.Picture = null;
+                        }
+                        UpdateStarSystem(starSystem);
+                    }
+                    else
+                    { 
+                        //if the planet has a picture sent in with it send it to collection
+                        if (planet.Picture != null)
+                        {
+                            fileModel.UpdateFile(planetExist.Picture);
+
+                            //we're gonna go ahead and null it out now
+                            planet.Picture = null;
+                        }
+
                         Coordinate coords = new Coordinate();
+                        //if it has a holding
                         if (planet.Holding != null)
                         {
                             coords.X = planet.Holding.GalaxyX;
                             coords.Y = planet.Holding.GalaxyY;
+
+                            if(starSystem.Coordinates == null)
+                            {
+                                starSystem.Coordinates = coords;
+                            }
                         }
-                        tempSys = new StarSystem(systemName, 0 , tempSys.Planets, null, null, "", "", null, null, coords);
-                        result = UpdateStarSystem(tempSys);                      
-                    }
-                    else
-                    {
-                        starSystem.Planets.Add(planet);
+
+                        //if planet exists get system it belongs to and overwrite planet
+                        int index = starSystem.Planets.FindIndex(p => p.Name == planet.Name);
+                        starSystem.Planets[index] = planet;
                         result = UpdateStarSystem(starSystem);
                     }
                 }
-                else
-                {
-                    //if exists get system it belongs to and add to planets
-                    int index = starSystem.Planets.FindIndex(p => p.Name == planet.Name);
-                    starSystem.Planets[index] = planet;
-                    result = UpdateStarSystem(starSystem);
-                }
+                
             }
             catch (System.Exception e)
             {
@@ -283,7 +346,7 @@ namespace APIStarportGE.Models
         public void StartGalaxyUpdates(object hollerback)
         {
             Program.Logs.Add(new LogMessage("StartGalaxyUpdates", MessageType.Message, "Starting Galaxy Updates"));
-            HoldingsFileModel fileModel = new HoldingsFileModel(databaseName);
+            FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
 
             string month = "";
             string day = "";

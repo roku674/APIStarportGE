@@ -86,6 +86,11 @@ namespace APIStarportGE
 
             if (Logs.Count > 0)
             {
+                for (int i = 0;i < Logs.Count;i++)
+                {
+                    Logs[i].Id = i;
+                }
+
                 emailBody = Utility.ConvertDataTableToHTML(Utility.ConvertListToDataTable(Logs), 3, 2, 1, null);
             }
 

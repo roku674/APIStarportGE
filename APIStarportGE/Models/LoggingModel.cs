@@ -11,8 +11,6 @@ namespace APIStarportGE.Models
 {
     public class LoggingModel
     {
-       
-       
-
+            
     }
 }

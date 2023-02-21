@@ -53,7 +53,7 @@ namespace APIAccount.Models
 
         public List<string> GetBuildables()
         {
-            List<Holding> holdings = collection.Find(h => h.Population <= 1000).ToList();
+            List<Holding> holdings = collection.Find(h => h.Population <= 5000).ToList();
 
             List<string> planetNames = new List<string>();
             foreach(Holding holding in holdings)
@@ -198,12 +198,13 @@ namespace APIAccount.Models
             return result;
         }
 
-        public UpdateResult UpdateHoldings(List<Holding> holdings)
+        public List<UpdateResult> UpdateHoldings(List<Holding> holdings)
         {
-            UpdateResult result = null;
+            List<UpdateResult> results = new List<UpdateResult>();
             try
             {
                 List<Task> taskPool = new List<Task>();
+                List<Task<UpdateResult>> updateTasks = new List<Task<UpdateResult>>();
 
                 foreach (Holding holding in holdings)
                 {
@@ -212,75 +213,28 @@ namespace APIAccount.Models
                         Task task = Task.Run(() => InsertHolding(holding));
 
                         taskPool.Add(task);
-
                     }
                     else
-                    {
-                    UpdateDefinition<Holding> updateDefinition = Builders<Holding>.Update
-                        .Set(y => y.PlanetType, holding.PlanetType)
-                        .Set(y => y.HopsAway, holding.HopsAway)
-                        .Set(y => y.Name, holding.Name)
-                        .Set(y => y.Location, holding.Location.Trim())
-                        .Set(y => y.GalaxyX, holding.GalaxyX)
-                        .Set(y => y.GalaxyY, holding.GalaxyY)
-                        .Set(y => y.Owner, holding.Owner)
-                        .Set(y => y.Corporation, holding.Corporation)
-                        .Set(y => y.Founded, holding.Founded)
-                        .Set(y => y.Population, holding.Population)
-                        .Set(y => y.PopGrowth, holding.PopGrowth)
-                        .Set(y => y.Morale, holding.Morale)
-                        .Set(y => y.MoraleChange, holding.MoraleChange)
-                        .Set(y => y.Government, holding.Government)
-                        .Set(y => y.Credits, holding.Credits)
-                        .Set(y => y.CredGrowth, holding.CredGrowth)
-                        .Set(y => y.Pollution, holding.Pollution)
-                        .Set(y => y.PollutionRate, holding.PollutionRate)
-                        .Set(y => y.Disaster, holding.Disaster)
-                        .Set(y => y.UnProtect, holding.UnProtect)
-                        .Set(y => y.PercConstruct, holding.PercConstruct)
-                        .Set(y => y.PercResearch, holding.PercResearch)
-                        .Set(y => y.PercMilitary, holding.PercMilitary)
-                        .Set(y => y.PercHarvest, holding.PercHarvest)
-                        .Set(y => y.CurrentlyBuilding, holding.CurrentlyBuilding)
-                        .Set(y => y.BuildMinutes, holding.BuildMinutes)
-                        .Set(y => y.Ore, holding.Ore)
-                        .Set(y => y.Ana, holding.Ana)
-                        .Set(y => y.Med, holding.Med)
-                        .Set(y => y.Org, holding.Org)
-                        .Set(y => y.Oil, holding.Oil)
-                        .Set(y => y.Ura, holding.Ura)
-                        .Set(y => y.Equ, holding.Equ)
-                        .Set(y => y.Spi, holding.Spi)
-                        .Set(y => y.Nukes, holding.Nukes)
-                        .Set(y => y.Negotiators, holding.Negotiators)
-                        .Set(y => y.Mines, holding.Mines)
-                        .Set(y => y.CompoundMines, holding.CompoundMines)
-                        .Set(y => y.FlakCannons, holding.FlakCannons)
-                        .Set(y => y.LaserCannons, holding.LaserCannons)
-                        .Set(y => y.Shields, holding.Shields)
-                        .Set(y => y.SolarShots, holding.SolarShots)
-                        .Set(y => y.SolarFreq, holding.SolarFreq)
-                        .Set(y => y.NumDiscoveries, holding.NumDiscoveries)
-                        .Set(y => y.Discoveries, holding.Discoveries)
-                        .Set(y => y.Environment, holding.Environment)
-                        ;
+                    {                      
+                        Task<UpdateResult> updateTask = Task.Run(() => UpdateHolding(holding));
 
-                    Task task = Task.Run(() => collection.UpdateOne(
-                        x => x.Location.Equals(holding.Location),
-                        updateDefinition));
-
-                    taskPool.Add(task); 
+                        updateTasks.Add(updateTask);
                     }
                 }
                 Task.WaitAll(taskPool.ToArray());
+                Task.WaitAll(updateTasks.ToArray());
 
+                foreach (var task in updateTasks)
+                {
+                    results.Add(task.Result);
+                }
             }
             catch (System.Exception e)
             {
                 Program.Logs.Add(new LogMessage("UpdateHoldings", MessageType.Error, e.ToString()));
             }
 
-            return result;
+            return results;
         }
 
         public DeleteResult DeleteColony(string name)
@@ -343,7 +297,7 @@ namespace APIAccount.Models
 
         public void StartColonyUpdates(object hollerback)
         {
-            HoldingsFileModel fileModel = new HoldingsFileModel(databaseName);
+            FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
             GalaxyModel galaxyModel = new GalaxyModel(databaseName);
 
             string month = "";

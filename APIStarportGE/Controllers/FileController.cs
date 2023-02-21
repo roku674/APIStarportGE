@@ -17,7 +17,7 @@ namespace APIStarportGE.Controllers
     [APIKey]
     [Route("api/file")]
     [ApiController]
-    public class HoldingsFileController : ControllerBase
+    public class FileController : ControllerBase
     {      
         [HttpGet("getcsvbyname")]
         public ActionResult GetByName(string name, string server)
@@ -30,7 +30,7 @@ namespace APIStarportGE.Controllers
                 return BadRequest($"{server} was not a valid server!");
 
             }
-            HoldingsFileModel fileModel = new HoldingsFileModel(database);
+            FileModel fileModel = new FileModel(database, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
 
             List<FileObj> files = fileModel.GetCsv(name.Trim());
 
@@ -64,7 +64,7 @@ namespace APIStarportGE.Controllers
                 return BadRequest($"{server} was not a valid server!");
 
             }
-            HoldingsFileModel fileModel = new HoldingsFileModel(database);
+            FileModel fileModel = new FileModel(database, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
 
             List<FileObj> files = fileModel.GetCsv(date);
 
@@ -88,6 +88,79 @@ namespace APIStarportGE.Controllers
             }
         }
 
+
+        [HttpGet("getpicture")]
+        public ActionResult GetPicture(string name, string server)
+        {
+            try
+            {
+                string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+
+                if (string.IsNullOrEmpty(database))
+                {
+                    return BadRequest($"{server} was not a valid server!");
+
+                }
+                FileModel planetModel = new FileModel(database, Settings.Configuration["MongoDB:Databases:Collections:pictures"]);
+
+                FileObj file = planetModel.GetFile(name);
+
+                if (file != null)
+                {
+                    return Ok(file);
+                }
+                else if (file == null)
+                {
+                    return StatusCode(404, $"No Planet were found");
+                }
+                else
+                {
+                    return StatusCode(503);
+                }
+            }
+            catch (System.Exception e)
+            {
+                Program.Logs.Add(new LogMessage("GalaxyContrller.GetPlanet", MessageType.Error, e.ToString()));
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet("getpictures")]
+        public ActionResult GetPictures(string server)
+        {
+            try
+            {
+                string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+
+                if (string.IsNullOrEmpty(database))
+                {
+                    return BadRequest($"{server} was not a valid server!");
+
+                }
+                FileModel planetModel = new FileModel(database, Settings.Configuration["MongoDB:Databases:Collections:pictures"]);
+
+                List<FileObj> files = planetModel.GetAllPictures();
+
+                if (files != null)
+                {
+                    return Ok(files);
+                }
+                else if (files == null)
+                {
+                    return StatusCode(404, $"No Planet were found");
+                }
+                else
+                {
+                    return StatusCode(503);
+                }
+            }
+            catch (System.Exception e)
+            {
+                Program.Logs.Add(new LogMessage("GalaxyContrller.GetPlanet", MessageType.Error, e.ToString()));
+                return StatusCode(500);
+            }
+        }
+
         // POST api/<FileController>
         [HttpPost("postcsv")]
         public IActionResult Post([FromBody] FileObj file, string server)
@@ -100,7 +173,7 @@ namespace APIStarportGE.Controllers
                 return BadRequest($"{server} was not a valid server!");
 
             }
-            HoldingsFileModel fileModel = new HoldingsFileModel(database);
+            FileModel fileModel = new FileModel(database, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
 
             bool suceeded = fileModel.InsertFile(file);
 
@@ -134,11 +207,11 @@ namespace APIStarportGE.Controllers
                 return BadRequest($"{server} was not a valid server!");
 
             }
-            HoldingsFileModel fileModel = new HoldingsFileModel(database);
+            FileModel fileModel = new FileModel(database, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
             ColonyModel colonyModel = new ColonyModel(database);
             GalaxyModel galaxyModel = new GalaxyModel(database);
 
-            UpdateResult result = fileModel.UpdateCsv(file);
+            UpdateResult result = fileModel.UpdateFile(file);
             ThreadPool.QueueUserWorkItem(colonyModel.StartColonyUpdates);
             ThreadPool.QueueUserWorkItem(galaxyModel.StartGalaxyUpdates);
 
@@ -172,7 +245,7 @@ namespace APIStarportGE.Controllers
                 return BadRequest($"{server} was not a valid server!");
 
             }
-            HoldingsFileModel fileModel = new HoldingsFileModel(database);
+            FileModel fileModel = new FileModel(database, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
 
             DeleteResult result = fileModel.DeleteCsv(name.Trim());
          
