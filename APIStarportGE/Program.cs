@@ -26,9 +26,11 @@ namespace APIStarportGE
 
         public static string configJson = Directory.GetCurrentDirectory() + "/config.json";
         public static List<LogMessage> Logs { get; set; }
+        public static DateTime deployTime { get; set; }
 
         public static void Main(string[] args)
         {
+            deployTime = DateTime.Now;
             LogMessage.MessageSourceSetter = "APIStarportGE";
             Logs = new List<LogMessage>();
             string configContents = System.IO.File.ReadAllText(configJson);
