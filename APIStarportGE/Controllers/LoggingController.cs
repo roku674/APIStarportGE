@@ -4,6 +4,7 @@ using APIStarportGE.Filters;
 using APIStarportGE.Models;
 using Microsoft.AspNetCore.Mvc;
 using Optimization.Objects.Logging;
+using Optimization.Utility;
 
 namespace APIStarportGE.Controllers
 {
@@ -22,10 +23,15 @@ namespace APIStarportGE.Controllers
         [HttpGet("ping")]
         public ActionResult Ping()
         {
-            return Content($"{LogMessage.MessageSourceSetter} " +
-                $"Last Updated: 2/21/2023:0125" +
-                $"Deployed At: {Program.deployTime}" +
-                $"Uptime: {System.Convert.ToDateTime(System.DateTime.Now - Program.deployTime)}");
+            return Content($"{LogMessage.MessageSourceSetter} " + "\n" +
+                $"Deployed At: {Program.deployTime}" + "\n" +
+                $"Uptime: {System.DateTime.Now - Program.deployTime}");
+        }
+
+        [HttpGet("logs")]
+        public ActionResult GetLogs()
+        {
+            return Content(Utility.ConvertDataTableToHTML(Utility.ConvertListToDataTable(Program.Logs), 3, 2, 1, null));
         }
 
     }
