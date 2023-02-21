@@ -25,7 +25,7 @@ namespace APIStarportGE.Controllers
         [HttpGet("ping")]
         public ActionResult Ping()
         {
-            return Content(LogMessage.MessageSourceSetter);
+            return Content(LogMessage.MessageSourceSetter + " Last Updated: 2/21/2023:0125");
         }
 
     }

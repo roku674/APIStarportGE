@@ -94,6 +94,21 @@ namespace APIStarportGE.Models
             return system;
         }
 
+        public StarSystem GetSystemByNameNoPlanetPics(string name)
+        {
+            StarSystem system = null;
+            try
+            {
+                system = collection.Find(x => x.Name == name).FirstOrDefault();
+            }
+            catch (System.Exception e)
+            {
+                System.Console.WriteLine($"Failed to register complete with {e}");
+            }          
+            return system;
+        }
+
+
         public List<StarSystem> GetStarSystems()
         {
             List<StarSystem> system = new List<StarSystem>();
@@ -147,7 +162,7 @@ namespace APIStarportGE.Models
              
                 foreach (Holding holding in holdings)
                 {
-                    StarSystem starSystem = GetSystemByName(StarSystem.GetSystemNameFromPlanet(holding.Location));
+                    StarSystem starSystem = GetSystemByNameNoPlanetPics(StarSystem.GetSystemNameFromPlanet(holding.Location));
                         
                     if (starSystem == null)
                     {
@@ -266,7 +281,7 @@ namespace APIStarportGE.Models
             {
                 // if doens't exist Create it
                 string systemName = StarSystem.GetSystemNameFromPlanet(planet.Name);
-                StarSystem starSystem = GetSystemByName(systemName);
+                StarSystem starSystem = GetSystemByNameNoPlanetPics(systemName);
                 FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]);
                 //if star system doesn't exist create it
                 if (starSystem == null)
@@ -308,7 +323,7 @@ namespace APIStarportGE.Models
                         //if the planet has a picture sent in with it send it to collection
                         if (planet.Picture != null)
                         {
-                            fileModel.UpdateFile(planetExist.Picture);
+                            fileModel.UpdateFile(planet.Picture);
 
                             //we're gonna go ahead and null it out now
                             planet.Picture = null;
