@@ -4,7 +4,6 @@ using APIStarportGE.Filters;
 using APIStarportGE.Models;
 using Microsoft.AspNetCore.Mvc;
 using Optimization.Objects.Logging;
-using System;
 
 namespace APIStarportGE.Controllers
 {
@@ -26,7 +25,7 @@ namespace APIStarportGE.Controllers
             return Content($"{LogMessage.MessageSourceSetter} " +
                 $"Last Updated: 2/21/2023:0125" +
                 $"Deployed At: {Program.deployTime}" +
-                $"Uptime: {Convert.ToDateTime(System.DateTime.Now - Program.deployTime)}");
+                $"Uptime: {System.Convert.ToDateTime(System.DateTime.Now - Program.deployTime)}");
         }
 
     }
