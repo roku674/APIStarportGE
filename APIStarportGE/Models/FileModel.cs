@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Numerics;
 
 namespace APIStarportGE.Models
 {
@@ -107,6 +108,11 @@ namespace APIStarportGE.Models
             UpdateResult result = null;
             try
             {
+                file.FileName = Path.ChangeExtension(
+                            file.FileName,
+                            Path.GetExtension(file.FileName).ToLower()
+                            );
+
                 if (GetFile(file.FileName) == null)
                 {
                     InsertFile(file);

@@ -59,7 +59,7 @@ namespace APIStarportGE.Models
 
             //if the planet is null we can try to get the picture
 
-            if (planet == null)
+            if (planet != null)
             {
                 planet.Picture = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]).GetFile(name + ".png");
             }
@@ -84,7 +84,7 @@ namespace APIStarportGE.Models
                 foreach (Planet planet in system.Planets)
                 {
                     FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]);
-                    if (planet.Picture == null)
+                    if (planet.Picture != null)
                     {
                         planet.Picture = fileModel.GetFile(planet.Name + ".png");
                     }
