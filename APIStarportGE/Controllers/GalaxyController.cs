@@ -170,10 +170,9 @@ namespace APIStarportGE.Controllers
             UpdateResult result = galaxyModel.UpdatePlanet(planet);
 
             if (result.IsAcknowledged)
-                {
-                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {planet.Name}"));
-
-                    return Ok(result);
+            {
+                Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {planet.Name}"));
+                return Ok(result);
             }
             else
             {
@@ -186,6 +185,5 @@ namespace APIStarportGE.Controllers
                 return StatusCode(500);
             }
         }
-
     }
 }
