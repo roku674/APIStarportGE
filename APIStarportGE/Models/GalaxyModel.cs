@@ -57,9 +57,9 @@ namespace APIStarportGE.Models
                 System.Console.WriteLine($"Failed to register complete with {e}");
             }
 
-            //if the planet isn't null we can try to get the picture
+            //if the planet is null we can try to get the picture
 
-            if (planet != null)
+            if (planet == null)
             {
                 planet.Picture = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]).GetFile(name + ".png");
             }
@@ -86,7 +86,7 @@ namespace APIStarportGE.Models
                     FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]);
                     if (planet.Picture == null)
                     {
-                        planet.Picture = fileModel.GetFile(name + ".png");
+                        planet.Picture = fileModel.GetFile(planet.Name + ".png");
                     }
                 }
             }
