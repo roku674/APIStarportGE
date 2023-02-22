@@ -39,6 +39,33 @@ namespace APIStarportGE.Controllers
             }
         }
 
+        [HttpGet("getlosingmorale")]
+        public ActionResult GetLosingMorale(string server)
+        {
+            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+
+            if (string.IsNullOrEmpty(database))
+            {
+                return BadRequest($"{server} was not a valid server!");
+            }
+            ColonyModel colonyModel = new ColonyModel(database);
+
+            List<string> shrinkingMorale = colonyModel.GetShrinkingMorale();
+
+            if (shrinkingMorale.Count > 0)
+            {
+                return Ok(shrinkingMorale);
+            }
+            else if (shrinkingMorale.Count == 0)
+            {
+                return StatusCode(404, $"No planet were found!");
+            }
+            else
+            {
+                return StatusCode(503);
+            }
+        }
+
         [HttpGet("getshrinkingore")]
         public ActionResult GetShrinkingOre(string server)
         {

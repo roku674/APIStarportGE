@@ -96,44 +96,26 @@ namespace APIAccount.Models
             return holding;
         }
 
+        public List<string> GetShrinkingMorale()
+        {
+            List<Holding> holdings = GetAll();
+
+            List<Holding> offlineSolars = holdings.FindAll(p => p.MoraleChange < 0 && p.Population > 1000);
+
+            List<string> colonyNames = new List<string>();
+            foreach (Holding holding in offlineSolars)
+            {
+                colonyNames.Add(holding.Location);
+            }
+
+            return colonyNames;
+        }
+
         public List<string> GetShrinkingOre()
         {
             //i need to get yesterday's holdings
 
-            string month = "";
-            string day = "";
-            DateTime dateTime = DateTime.Now.AddDays(-1);
-
-            if (dateTime.Month < 10)
-            {
-                month = "0" + dateTime.Month;
-            }
-            else
-            {
-                month = dateTime.Month.ToString();
-            }
-            if (dateTime.Day < 10)
-            {
-                day = "0" + dateTime.Day;
-            }
-            else
-            {
-                day = dateTime.Day.ToString();
-            }
-            string yesterdayCsv = $"holdings_{DateTime.Now.Year}{month}{day}.csv";
-
-            FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
-            FileObj csvFile = fileModel.GetFile(yesterdayCsv);
-            string tempPath = Path.GetTempFileName().Replace(".tmp", ".csv");
-            System.IO.File.WriteAllText(tempPath, csvFile.FileContents);
-            DataTable csvDt = Utility.ConvertCSVtoDataTable(tempPath);
-            System.IO.File.Delete(tempPath);
-
-            foreach (DataRow row in csvDt.Rows)
-            {
-                int environmentValue = Convert.ToInt32(row["Environment"]);
-                row["Environment"] = Convert.ToBoolean(environmentValue);
-            }
+            DataTable csvDt = GetYesterdaysFileAsDataTable();
             List<Holding> yesterdaysHoldings = Utility.ConvertDataTableToList<Holding>(csvDt);
             List<Holding> todaysHoldings = GetAll();
 
@@ -413,6 +395,48 @@ namespace APIAccount.Models
                 files = fileModel.GetCsv($"holdings_{dateTime.Year}{month}{day}.csv");
             }
             RunUpdateHoldings(files[0].FileContents);
-        }      
+        }
+
+        private DataTable GetYesterdaysFileAsDataTable()
+        {
+            string month = "";
+            string day = "";
+            DateTime dateTime = DateTime.Now.AddDays(-1);
+
+            if (dateTime.Month < 10)
+            {
+                month = "0" + dateTime.Month;
+            }
+            else
+            {
+                month = dateTime.Month.ToString();
+            }
+            if (dateTime.Day < 10)
+            {
+                day = "0" + dateTime.Day;
+            }
+            else
+            {
+                day = dateTime.Day.ToString();
+            }
+            string yesterdayCsv = $"holdings_{DateTime.Now.Year}{month}{day}.csv";
+
+            FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
+            FileObj csvFile = fileModel.GetFile(yesterdayCsv);
+            string tempPath = Path.GetTempFileName().Replace(".tmp", ".csv");
+            System.IO.File.WriteAllText(tempPath, csvFile.FileContents);
+            DataTable csvDt = Utility.ConvertCSVtoDataTable(tempPath);
+            System.IO.File.Delete(tempPath);
+
+            foreach (DataRow row in csvDt.Rows)
+            {
+                int environmentValue = Convert.ToInt32(row["Environment"]);
+                row["Environment"] = Convert.ToBoolean(environmentValue);
+            }
+
+            return csvDt;
+        }
+
+       
     }
 }
