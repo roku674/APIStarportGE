@@ -46,33 +46,6 @@ namespace APIStarportGE.Controllers
             }
         }
 
-        [HttpGet("getbuilds")]
-        public ActionResult GetBuilds(string server)
-        {
-            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
-
-            if (string.IsNullOrEmpty(database))
-            {
-                return BadRequest($"{server} was not a valid server!");
-            }
-            ColonyModel colonyModel = new ColonyModel(database);
-
-            List<string> builds = colonyModel.GetBuildables();
-
-            if (builds.Count > 0)
-            {
-                return Ok(builds);
-            }
-            else if (builds.Count == 0)
-            {
-                return StatusCode(404, $"No planet were found!");
-            }
-            else
-            {
-                return StatusCode(503);
-            }
-        }
-
         [HttpGet("getbyname")]
         public ActionResult GetByName(string name, string server)
         {
@@ -109,8 +82,9 @@ namespace APIStarportGE.Controllers
             }
         }
 
-        [HttpGet("getcoloniesbysystem")]
-        public ActionResult GetBySystem(string name, string server)
+        // POST api/<FileController>
+        [HttpPost("post")]
+        public IActionResult PostCol([FromBody] Holding holding, string server)
         {
             try
             {
@@ -123,56 +97,17 @@ namespace APIStarportGE.Controllers
                 }
                 ColonyModel colonyModel = new ColonyModel(database);
 
-                List<Holding> holdings = colonyModel.GetPlanetsBySystem(name.Trim());
+                bool succeeded = colonyModel.InsertHolding(holding);
 
-                if (holdings.Count > 0)
+                if (succeeded)
                 {
-                    return Ok(holdings);
-                }
-                else if (holdings.Count == 0)
-                {
-                    return StatusCode(404, $"No planet was found by {name}");
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {holding.Location}"));
+                    return Ok(succeeded);
                 }
                 else
                 {
                     return StatusCode(503);
                 }
-            }
-            catch (System.Exception e)
-            {
-                Program.Logs.Add(new LogMessage("ColoniesContrller.GetBySystem", MessageType.Error, e.ToString()));
-                return StatusCode(500);
-            }
-        }
-
-        // POST api/<FileController>
-        [HttpPost("post")]
-        public IActionResult PostCol([FromBody] Holding holding, string server)
-        {
-            try
-            {
-
-            
-            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
-
-            if (string.IsNullOrEmpty(database))
-            {
-                return BadRequest($"{server} was not a valid server!");
-
-            }
-            ColonyModel colonyModel = new ColonyModel(database);
-
-            bool succeeded = colonyModel.InsertHolding(holding);
-
-            if (succeeded)
-                {
-                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {holding.Location}"));
-                    return Ok(succeeded);
-            }
-            else
-            {
-                return StatusCode(503);
-            }
             }
             catch (System.Exception e)
             {

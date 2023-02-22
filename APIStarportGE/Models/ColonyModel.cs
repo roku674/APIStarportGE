@@ -95,18 +95,81 @@ namespace APIAccount.Models
             }
             return holding;
         }
-        public List<Holding> GetPlanetsBySystem(string name)
+
+        public List<string> GetShrinkingOre()
         {
-            List<Holding> holdings = new List<Holding>();
-            try
+            //i need to get yesterday's holdings
+
+            string month = "";
+            string day = "";
+            DateTime dateTime = DateTime.Now.AddDays(-1);
+
+            if (dateTime.Month < 10)
             {
-                holdings = collection.AsQueryable().Where(x=> x.Location == name).ToList();
+                month = "0" + dateTime.Month;
             }
-            catch (System.Exception e)
+            else
             {
-                System.Console.WriteLine($"Failed to register complete with {e}");
+                month = dateTime.Month.ToString();
             }
-            return holdings;
+            if (dateTime.Day < 10)
+            {
+                day = "0" + dateTime.Day;
+            }
+            else
+            {
+                day = dateTime.Day.ToString();
+            }
+            string yesterdayCsv = $"holdings_{DateTime.Now.Year}{month}{day}.csv";
+
+            FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
+            FileObj csvFile = fileModel.GetFile(yesterdayCsv);
+            string tempPath = Path.GetTempFileName().Replace(".tmp", ".csv");
+            System.IO.File.WriteAllText(tempPath, csvFile.FileContents);
+            DataTable csvDt = Utility.ConvertCSVtoDataTable(tempPath);
+            System.IO.File.Delete(tempPath);
+
+            foreach (DataRow row in csvDt.Rows)
+            {
+                int environmentValue = Convert.ToInt32(row["Environment"]);
+                row["Environment"] = Convert.ToBoolean(environmentValue);
+            }
+            List<Holding> yesterdaysHoldings = Utility.ConvertDataTableToList<Holding>(csvDt);
+            List<Holding> todaysHoldings = GetAll();
+
+            List<string> losingOre = new List<string>();
+
+            foreach(Holding holding in todaysHoldings)
+            {
+                Holding planetYesterday = yesterdaysHoldings.Find(h => h.Location == holding.Location);
+                if (planetYesterday != null)         
+                {
+                    int remainder = holding.Ore - planetYesterday.Ore;
+
+                    if(remainder < 0)
+                    {
+                        losingOre.Add(holding.Location);
+                    }
+                }
+            }
+
+            return losingOre;
+
+        }
+
+        public List<string> GetLessthanSolar(int solarNum)
+        {
+            List<Holding> holdings = GetAll();
+
+            List<Holding> offlineSolars = holdings.FindAll(p => p.SolarShots <= solarNum && p.Population > 1000);
+
+            List<string> colonyNames = new List<string>();
+            foreach(Holding holding in offlineSolars)
+            {
+                colonyNames.Add(holding.Location);
+            }
+
+            return colonyNames;
         }
 
         public bool InsertHolding(Holding holding)
@@ -350,6 +413,6 @@ namespace APIAccount.Models
                 files = fileModel.GetCsv($"holdings_{dateTime.Year}{month}{day}.csv");
             }
             RunUpdateHoldings(files[0].FileContents);
-        }
+        }      
     }
 }
