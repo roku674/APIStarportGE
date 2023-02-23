@@ -179,7 +179,7 @@ namespace APIStarportGE.Controllers
 
             if (suceeded)
                 {
-                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {file.FileName}"));
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"Updated {file.FileName} on {server}"));
 
                     return Ok();
             }
@@ -217,7 +217,7 @@ namespace APIStarportGE.Controllers
 
             if (result.IsAcknowledged)
                 {
-                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {file.FileName}"));
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"Updated {file.FileName} on {server}"));
 
                     return Ok(result);
             }

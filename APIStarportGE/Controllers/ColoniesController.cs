@@ -101,7 +101,7 @@ namespace APIStarportGE.Controllers
 
                 if (succeeded)
                 {
-                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {holding.Location}"));
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"Updated {holding.Location} on {server}"));
                     return Ok(succeeded);
                 }
                 else
@@ -135,7 +135,7 @@ namespace APIStarportGE.Controllers
 
                 if (result.IsAcknowledged)
                 {
-                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {holding.Location}"));
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"Updated {holding.Location} on {server}"));
                     return Ok(result);
                 }
                 else

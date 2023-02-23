@@ -154,7 +154,7 @@ namespace APIStarportGE.Models
                 {
                     int environmentValue = Convert.ToInt32(row["Environment"]);
                     row["Environment"] = Convert.ToBoolean(environmentValue);
-                }
+                }              
 
                 List<Holding> holdings = Utility.ConvertDataTableToList<Holding>(dataTable);
 

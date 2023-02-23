@@ -100,7 +100,7 @@ namespace APIAccount.Models
         {
             List<Holding> holdings = GetAll();
 
-            List<Holding> offlineSolars = holdings.FindAll(p => p.PollutionRate >0 && p.Population > 1000);
+            List<Holding> offlineSolars = holdings.FindAll(p => p.PolluteRate >0 && p.Population > 1000);
 
             List<string> colonyNames = new List<string>();
             foreach (Holding holding in offlineSolars)
@@ -158,7 +158,7 @@ namespace APIAccount.Models
         {
             List<Holding> holdings = GetAll();
 
-            List<Holding> offlineSolars = holdings.FindAll(p => p.SolarShots <= solarNum && p.Population > 1000);
+            List<Holding> offlineSolars = holdings.FindAll(p => p.Solarshots <= solarNum && p.Population > 1000);
 
             List<string> colonyNames = new List<string>();
             foreach(Holding holding in offlineSolars)
@@ -214,14 +214,14 @@ namespace APIAccount.Models
                     .Set(y => y.Credits, holding.Credits)
                     .Set(y => y.CredGrowth, holding.CredGrowth)
                     .Set(y => y.Pollution, holding.Pollution)
-                    .Set(y => y.PollutionRate, holding.PollutionRate)
-                    .Set(y => y.Disaster, holding.Disaster)
-                    .Set(y => y.UnProtect, holding.UnProtect)
+                    .Set(y => y.PolluteRate, holding.PolluteRate)
+                    .Set(y => y.Disasters, holding.Disasters)
+                    .Set(y => y.UNProtect, holding.UNProtect)
                     .Set(y => y.PercConstruct, holding.PercConstruct)
                     .Set(y => y.PercResearch, holding.PercResearch)
                     .Set(y => y.PercMilitary, holding.PercMilitary)
                     .Set(y => y.PercHarvest, holding.PercHarvest)
-                    .Set(y => y.CurrentlyBuilding, holding.CurrentlyBuilding)
+                    .Set(y => y.CurrentBuild, holding.CurrentBuild)
                     .Set(y => y.BuildMinutes, holding.BuildMinutes)
                     .Set(y => y.Ore, holding.Ore)
                     .Set(y => y.Ana, holding.Ana)
@@ -238,9 +238,9 @@ namespace APIAccount.Models
                     .Set(y => y.FlakCannons, holding.FlakCannons)
                     .Set(y => y.LaserCannons, holding.LaserCannons)
                     .Set(y => y.Shields, holding.Shields)
-                    .Set(y => y.SolarShots, holding.SolarShots)
-                    .Set(y => y.SolarFreq, holding.SolarFreq)
-                    .Set(y => y.NumDiscoveries, holding.NumDiscoveries)
+                    .Set(y => y.Solarshots, holding.Solarshots)
+                    .Set(y => y.Solarfreq, holding.Solarfreq)
+                    .Set(y => y.NumDiscovs, holding.NumDiscovs)
                     .Set(y => y.Discoveries, holding.Discoveries)
                     .Set(y => y.Environment, holding.Environment)
                     ;

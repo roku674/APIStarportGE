@@ -139,7 +139,7 @@ namespace APIStarportGE.Controllers
 
             if (result.IsAcknowledged)
                 {
-                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {starSystem.Name}"));
+                    Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"Updated {starSystem.Name} on {server}"));
                     return Ok(result);
             }
             else
@@ -171,7 +171,7 @@ namespace APIStarportGE.Controllers
 
             if (result.IsAcknowledged)
             {
-                Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"updated {planet.Name}"));
+                Program.Logs.Add(new LogMessage("ColoniesContrller.PutCol", MessageType.Success, $"Updated {planet.Name} on {server}"));
                 return Ok(result);
             }
             else
