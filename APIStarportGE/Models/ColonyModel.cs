@@ -96,6 +96,21 @@ namespace APIAccount.Models
             return holding;
         }
 
+        public List<string> GetPolluting()
+        {
+            List<Holding> holdings = GetAll();
+
+            List<Holding> offlineSolars = holdings.FindAll(p => p.PollutionRate >0 && p.Population > 1000);
+
+            List<string> colonyNames = new List<string>();
+            foreach (Holding holding in offlineSolars)
+            {
+                colonyNames.Add(holding.Location);
+            }
+
+            return colonyNames;
+        }
+
         public List<string> GetShrinkingMorale()
         {
             List<Holding> holdings = GetAll();
@@ -437,6 +452,6 @@ namespace APIAccount.Models
             return csvDt;
         }
 
-       
+        
     }
 }
