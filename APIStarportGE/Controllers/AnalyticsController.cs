@@ -13,7 +13,7 @@ namespace APIStarportGE.Controllers
     public class AnalyticsController : ControllerBase
     {
         [HttpGet("getbuilds")]
-        public ActionResult GetBuilds(string server)
+        public ActionResult GetBuilds(string server, bool research)
         {
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
@@ -23,7 +23,7 @@ namespace APIStarportGE.Controllers
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
-            List<string> builds = colonyModel.GetBuildables();
+            List<string> builds = colonyModel.GetBuildables(research);
 
             if (builds.Count > 0)
             {

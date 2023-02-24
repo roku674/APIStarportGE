@@ -51,14 +51,16 @@ namespace APIAccount.Models
             return collection.Find(new BsonDocument()).ToList();
         }
 
-        public List<string> GetBuildables()
+        public List<string> GetBuildables(bool research)
         {
             List<Holding> holdings = collection.Find(h => h.Population <= 5000).ToList();
-
+         
             List<string> planetNames = new List<string>();
             foreach(Holding holding in holdings)
             {
                 bool adding = false;
+                if (!research)
+                    adding = true;
                 if (holding.Discoveries.Contains("Arch lvl 5"))
                     adding = true;
                 else if (holding.Discoveries.Contains("Arch lvl 4") && holding.PlanetType != "mountainous" && holding.PlanetType != "desert")
@@ -423,7 +425,7 @@ namespace APIAccount.Models
             try
             {
                 collection.DeleteMany(Builders<Holding>.Filter.Eq(f => f.Location, name));
-                System.Console.WriteLine("Deleted Colony: " + name);
+                System.Console.WriteLine("Deleted Colony: " + name + " on server: " + databaseName);
             }
             catch (System.Exception e)
             {
