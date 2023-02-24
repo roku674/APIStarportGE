@@ -77,13 +77,13 @@ namespace APIStarportGE.Controllers
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
-            List<string> shrinkingMorale = colonyModel.GetPolluting();
+            List<string> pollutingColonies = colonyModel.GetPolluting();
 
-            if (shrinkingMorale.Count > 0)
+            if (pollutingColonies.Count > 0)
             {
-                return Ok(shrinkingMorale);
+                return Ok(pollutingColonies);
             }
-            else if (shrinkingMorale.Count == 0)
+            else if (pollutingColonies.Count == 0)
             {
                 return StatusCode(404, $"No planet were found!");
             }
@@ -138,6 +138,41 @@ namespace APIStarportGE.Controllers
                 return Ok(lowSolars);
             }
             else if (lowSolars.Count == 0)
+            {
+                return StatusCode(404, $"No planet were found!");
+            }
+            else
+            {
+                return StatusCode(503);
+            }
+        }
+
+        [HttpGet("gettotals")]
+        public ActionResult GetPlanetTotals(string owner, string server, bool isEnemy)
+        {
+            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+            if (string.IsNullOrEmpty(database))
+            {
+                return BadRequest($"{server} was not a valid server!");
+            }
+            ColonyModel colonyModel = new ColonyModel(database);
+
+            string planetTotals = null;
+
+            if (isEnemy)
+            {
+                planetTotals = colonyModel.GetEnemyPlanets(owner);
+            }
+            else
+            {
+                planetTotals = colonyModel.GetPlanetTotals(owner);
+            }
+
+            if (!string.IsNullOrWhiteSpace(planetTotals))
+            {
+                return Ok(planetTotals);
+            }
+            else if (string.IsNullOrWhiteSpace(planetTotals))
             {
                 return StatusCode(404, $"No planet were found!");
             }

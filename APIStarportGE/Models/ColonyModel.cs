@@ -82,6 +82,11 @@ namespace APIAccount.Models
             return planetNames;
         }
 
+        public string GetEnemyPlanets(string owner)
+        {
+            return null;
+        }
+
         public Holding GetPlanetByName(string planetName)
         {
             Holding holding = null;
@@ -94,6 +99,121 @@ namespace APIAccount.Models
                 Program.Logs.Add(new LogMessage("GetPlanetByName", MessageType.Error, e.ToString()));
             }
             return holding;
+        }
+
+        public string GetPlanetTotals(string owner)
+        {
+            List<Holding> holdings = GetAll();
+
+            List<Holding> theirPlanets = holdings.FindAll(p => p.Owner == owner);
+            uint arctics = 0, arcticsZ = 0, deserts = 0, desertsZ = 0, earths = 0, earthsZ = 0, greenhouses = 0, greenhousesZ = 0, mountains = 0, mountainsZ = 0, oceans = 0, oceansZ = 0, paradises = 0, paradisesZ = 0, rockies = 0, rockiesZ = 0, volcanics = 0, volcanicsZ = 0, invasions = 0, dd = 0;
+
+            foreach (StarportObjects.Holding planet in theirPlanets)
+            {
+                if (planet.Name.EndsWith(".I") || planet.Name.EndsWith(".ZI") || planet.Name.EndsWith(".ZDI"))
+                {
+                    invasions++;
+                }
+                if (planet.Name.EndsWith(".D") || planet.Name.EndsWith(".DI") || planet.Name.Contains(".ZD"))
+                {
+                    dd++;
+                }
+                if (planet.Population >= 5000)
+                {
+                    if (planet.PlanetType.Equals("arctic"))
+                    {
+                        arctics++;
+                        if (planet.Population >= 90000)
+                        {
+                            arcticsZ++;
+                        }
+                    }
+                    else if (planet.PlanetType.Equals("desert"))
+                    {
+                        deserts++;
+                        if (planet.Population >= 90000)
+                        {
+                            desertsZ++;
+                        }
+                    }
+                    else if (planet.PlanetType.Equals("earthlike"))
+                    {
+                        earths++;
+                        if (planet.Population >= 90000)
+                        {
+                            earthsZ++;
+                        }
+                    }
+                    else if (planet.PlanetType.Equals("greenhouse"))
+                    {
+                        greenhouses++;
+                        if (planet.Population >= 90000)
+                        {
+                            greenhousesZ++;
+                        }
+                    }
+                    else if (planet.PlanetType.Equals("mountainous"))
+                    {
+                        mountains++;
+                        if (planet.Population >= 90000)
+                        {
+                            mountainsZ++;
+                        }
+                    }
+                    else if (planet.PlanetType.Equals("oceanic"))
+                    {
+                        oceans++;
+                        if (planet.Population >= 90000)
+                        {
+                            oceansZ++;
+                        }
+                    }
+                    else if (planet.PlanetType.Equals("Intergalactic paradise"))
+                    {
+                        paradises++;
+                        if (planet.Population >= 90000)
+                        {
+                            paradisesZ++;
+                        }
+                    }
+                    else if (planet.PlanetType.Equals("rocky"))
+                    {
+                        rockies++;
+                        if (planet.Population >= 90000)
+                        {
+                            rockiesZ++;
+                        }
+                    }
+                    else if (planet.PlanetType.Equals("volcanic"))
+                    {
+                        volcanics++;
+                        if (planet.Population >= 90000)
+                        {
+                            volcanicsZ++;
+                        }
+                    }
+                }
+
+            }
+
+            uint totals = arctics + deserts + earths + greenhouses + mountains + oceans + paradises + rockies + volcanics;
+            uint totalsZ = arcticsZ + desertsZ + earthsZ + greenhousesZ + mountainsZ + oceansZ + paradisesZ + rockies + volcanics;
+
+            string quote = "Arc " + arcticsZ + "/" + arctics +
+                "|~{yellow}~Des " + desertsZ + "/" + deserts +
+                "|~{green}~Earth " + earthsZ + "/" + earths +
+                "|~{orange}~Green " + greenhousesZ + "/" + greenhouses +
+                "|~{purple}~Mount " + mountainsZ + "/" + mountains +
+                "|~{blue}~Oce " + oceansZ + "/" + oceans +
+                "|~{pink}~IGPs ~{link}1:" + paradises + "~" +
+                "|~{gray}~Roc " + rockiesZ + "/" + rockies +
+                "|~{red}~Volc " + volcanicsZ + "/" + volcanics +
+                "|~{link}25:Caps:~ " + invasions +
+                "|~{green}~DDs: " + dd +
+                "|~{cyan}~" + totalsZ + " Zounds/" + totals + "~{link}21: Cols~";
+
+            return quote;
+                      
         }
 
         public List<string> GetPolluting()
@@ -152,7 +272,7 @@ namespace APIAccount.Models
 
             return losingOre;
 
-        }
+        }         
 
         public List<string> GetLessthanSolar(int solarNum)
         {
@@ -452,6 +572,6 @@ namespace APIAccount.Models
             return csvDt;
         }
 
-        
+       
     }
 }
