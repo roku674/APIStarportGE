@@ -467,7 +467,7 @@ namespace APIAccount.Models
                 UpdateHoldings(holdings);
 
                 System.IO.File.Delete(tempFile);
-                Program.Logs.Add(new LogMessage("RunUpdateGalaxyColonies", MessageType.Success, "Ran to completion."));
+                Program.Logs.Add(new LogMessage("RunUpdateHoldings", MessageType.Success, "Ran to completion."));
             }
             catch (System.Exception exc)
             {
