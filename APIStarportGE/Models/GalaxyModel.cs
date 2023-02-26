@@ -147,8 +147,15 @@ namespace APIStarportGE.Models
             {
                 System.IO.File.WriteAllText(tempFile, fileContents);
 
+                string[] lines = File.ReadAllLines(tempFile);
+                for (int i = 0;i < lines.Length;i++)
+                {
+                    lines[i] = lines[i].Substring(0, lines[i].Length - 1);
+                }
+
+                File.WriteAllLines(tempFile, lines);
+
                 DataTable dataTable = Utility.ConvertCSVtoDataTable(tempFile);
-                dataTable.Columns.RemoveAt(dataTable.Columns.Count - 1);
 
                 foreach (DataRow row in dataTable.Rows)
                 {

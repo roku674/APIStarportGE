@@ -12,10 +12,7 @@ using System.Data;
 using Optimization.Utility;
 using MongoDB.Bson;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 using APIStarportGE.Models;
-using System.Xml.Linq;
-using System.Reflection;
 using APIStarportGE;
 using Optimization.Objects.Logging;
 using System.Net.Http;
@@ -232,6 +229,21 @@ namespace APIAccount.Models
 
             return colonyNames;
         }
+        public Dictionary<string,string> GetPollutingAsDict()
+        {
+            List<Holding> holdings = GetAll();
+
+            List<Holding> offlineSolars = holdings.FindAll(p => p.PolluteRate > 0 && p.Population > 1000);
+
+            Dictionary<string, string> colonyNames = new Dictionary<string, string>();
+            foreach (Holding holding in offlineSolars)
+            {
+                colonyNames.Add(holding.Location, $"({holding.GalaxyX}, {holding.GalaxyY})");
+            }
+
+            return colonyNames;
+        }
+
 
         public List<string> GetShrinkingMorale()
         {
@@ -247,6 +259,21 @@ namespace APIAccount.Models
 
             return colonyNames;
         }
+        public Dictionary<string,string> GetShrinkingMoraleAsDict()
+        {
+            List<Holding> holdings = GetAll();
+
+            List<Holding> offlineSolars = holdings.FindAll(p => p.MoraleChange < 0 && p.Population > 1000);
+
+            Dictionary<string,string> colonyNames = new Dictionary<string,string>();
+            foreach (Holding holding in offlineSolars)
+            {
+                colonyNames.Add(holding.Location, $"({holding.GalaxyX}, {holding.GalaxyY})");
+            }
+
+            return colonyNames;
+        }
+
 
         public List<string> GetShrinkingOre()
         {
@@ -274,7 +301,35 @@ namespace APIAccount.Models
 
             return losingOre;
 
-        }         
+        }
+        public Dictionary<string, string> GetShrinkingOreAsDict()
+        {
+            //i need to get yesterday's holdings
+
+            DataTable csvDt = GetYesterdaysFileAsDataTable();
+            List<Holding> yesterdaysHoldings = Utility.ConvertDataTableToList<Holding>(csvDt);
+            List<Holding> todaysHoldings = GetAll();
+
+            Dictionary<string,string> losingOre = new Dictionary<string, string>();
+
+            foreach (Holding holding in todaysHoldings)
+            {
+                Holding planetYesterday = yesterdaysHoldings.Find(h => h.Location == holding.Location);
+                if (planetYesterday != null)
+                {
+                    int remainder = holding.Ore - planetYesterday.Ore;
+
+                    if (remainder < 0)
+                    {
+                        losingOre.Add(holding.Location, $"({holding.GalaxyX}, {holding.GalaxyY})");
+                    }
+                }
+            }
+
+            return losingOre;
+
+        }
+
 
         public List<string> GetLessthanSolar(int solarNum, int population)
         {
@@ -286,6 +341,20 @@ namespace APIAccount.Models
             foreach(Holding holding in offlineSolars)
             {
                 colonyNames.Add(holding.Location);
+            }
+
+            return colonyNames;
+        }
+        public Dictionary<string,string> GetLessthanSolarAsDict(int solarNum, int population)
+        {
+            List<Holding> holdings = GetAll();
+
+            List<Holding> offlineSolars = holdings.FindAll(p => p.Solarshots <= solarNum && p.Population > population);
+
+            Dictionary<string, string> colonyNames = new Dictionary<string, string>();
+            foreach (Holding holding in offlineSolars)
+            {
+                colonyNames.Add(holding.Location,$"({holding.GalaxyX}, {holding.GalaxyY})");
             }
 
             return colonyNames;
@@ -442,8 +511,15 @@ namespace APIAccount.Models
             {
                 System.IO.File.WriteAllText(tempFile, fileContents);
 
+                string[] lines = File.ReadAllLines(tempFile);
+                for (int i = 0;i < lines.Length;i++)
+                {
+                    lines[i] = lines[i].Substring(0, lines[i].Length - 1);
+                }
+
+                File.WriteAllLines(tempFile, lines);
+
                 DataTable dataTable = Utility.ConvertCSVtoDataTable(tempFile);
-                dataTable.Columns.RemoveAt(dataTable.Columns.Count - 1);
 
                 foreach (DataRow row in dataTable.Rows)
                 {

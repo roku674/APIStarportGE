@@ -88,7 +88,6 @@ namespace APIStarportGE.Controllers
             }
         }
 
-
         [HttpGet("getpicture")]
         public ActionResult GetPicture(string name, string server)
         {
