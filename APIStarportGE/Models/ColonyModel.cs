@@ -276,11 +276,11 @@ namespace APIAccount.Models
 
         }         
 
-        public List<string> GetLessthanSolar(int solarNum)
+        public List<string> GetLessthanSolar(int solarNum, int population)
         {
             List<Holding> holdings = GetAll();
 
-            List<Holding> offlineSolars = holdings.FindAll(p => p.Solarshots <= solarNum && p.Population > 1000);
+            List<Holding> offlineSolars = holdings.FindAll(p => p.Solarshots <= solarNum && p.Population > population);
 
             List<string> colonyNames = new List<string>();
             foreach(Holding holding in offlineSolars)

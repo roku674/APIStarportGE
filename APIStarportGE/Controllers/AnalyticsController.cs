@@ -121,7 +121,7 @@ namespace APIStarportGE.Controllers
         }
 
         [HttpGet("getsolarlowerthan")]
-        public ActionResult GetSolarOff(int solarRate, string server)
+        public ActionResult GetSolarOff(int solarRate,int population, string server)
         {
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
@@ -131,7 +131,7 @@ namespace APIStarportGE.Controllers
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
-            List<string> lowSolars = colonyModel.GetLessthanSolar(solarRate);
+            List<string> lowSolars = colonyModel.GetLessthanSolar(solarRate, population);
 
             if (lowSolars.Count > 0)
             {
