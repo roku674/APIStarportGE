@@ -280,7 +280,7 @@ namespace APIAccount.Models
             //i need to get yesterday's holdings
 
             DataTable csvDt = GetYesterdaysFileAsDataTable();
-            List<Holding> yesterdaysHoldings = Utility.ConvertDataTableToList<Holding>(csvDt);
+            List<Holding> yesterdaysHoldings = Utility.ConvertDataTableToListFast<Holding>(csvDt, 50);
             List<Holding> todaysHoldings = GetAll();
 
             List<string> losingOre = new List<string>();
@@ -307,7 +307,7 @@ namespace APIAccount.Models
             //i need to get yesterday's holdings
 
             DataTable csvDt = GetYesterdaysFileAsDataTable();
-            List<Holding> yesterdaysHoldings = Utility.ConvertDataTableToList<Holding>(csvDt);
+            List<Holding> yesterdaysHoldings = Utility.ConvertDataTableToListFast<Holding>(csvDt,50);
             List<Holding> todaysHoldings = GetAll();
 
             Dictionary<string,string> losingOre = new Dictionary<string, string>();
@@ -512,6 +512,7 @@ namespace APIAccount.Models
                 System.IO.File.WriteAllText(tempFile, fileContents);
 
                 string[] lines = File.ReadAllLines(tempFile);
+                lines[0].Replace(" ", "");
                 for (int i = 0;i < lines.Length;i++)
                 {
                     lines[i] = lines[i].Substring(0, lines[i].Length - 1);
@@ -555,6 +556,8 @@ namespace APIAccount.Models
 
         public void StartColonyUpdates(object hollerback)
         {
+            Program.Logs.Add(new LogMessage("StartColonyUpdates", MessageType.Message, "Starting Colony Updates on " + databaseName));
+
             FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:csv"]);
             GalaxyModel galaxyModel = new GalaxyModel(databaseName);
 
@@ -603,7 +606,7 @@ namespace APIAccount.Models
                 {
                     day = dateTime.Day.ToString();
                 }
-                System.Console.WriteLine($"Attempting holdings_{dateTime.Year}{month}{day}.csv in StartColonyUpdates");
+                System.Console.WriteLine($"Attempting holdings_{dateTime.Year}{month}{day}.csv in StartColonyUpdates on " + databaseName);
 
                 files = fileModel.GetCsv($"holdings_{dateTime.Year}{month}{day}.csv");
             }

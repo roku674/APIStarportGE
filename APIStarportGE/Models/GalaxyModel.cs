@@ -148,6 +148,7 @@ namespace APIStarportGE.Models
                 System.IO.File.WriteAllText(tempFile, fileContents);
 
                 string[] lines = File.ReadAllLines(tempFile);
+                lines[0].Replace(" ", "");
                 for (int i = 0;i < lines.Length;i++)
                 {
                     lines[i] = lines[i].Substring(0, lines[i].Length - 1);
