@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APIStarportGETests.Controllers
+namespace APIStarportGETests.Models
 {
-    internal class LoggingControllerTests
+    internal class FileModelTests
     {
     }
 }

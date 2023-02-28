@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace APIStarportGETests.Controllers
 {
-    internal class LoggingControllerTests
+    internal class FileControllerTests
     {
     }
 }
