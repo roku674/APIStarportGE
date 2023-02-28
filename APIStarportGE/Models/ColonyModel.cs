@@ -83,7 +83,10 @@ namespace APIAccount.Models
 
         public string GetEnemyPlanets(string owner)
         {
-            return null;
+            GalaxyModel galaxyModel = new GalaxyModel(databaseName);
+            List<StarSystem> galaxy = galaxyModel.GetStarSystems();
+            string result = Newtonsoft.Json.JsonConvert.SerializeObject(galaxy.SelectMany(s => s.Planets).Where(p => p.Owner == owner).ToList());
+            return result;
         }
 
         public Holding GetPlanetByName(string planetName)

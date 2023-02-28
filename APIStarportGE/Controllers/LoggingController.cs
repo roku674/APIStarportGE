@@ -8,7 +8,6 @@ using Optimization.Utility;
 
 namespace APIStarportGE.Controllers
 {
-    [APIKey]
     [ApiController]
     [Route("logging")]
     public class LoggingController : ControllerBase
@@ -31,7 +30,9 @@ namespace APIStarportGE.Controllers
         [HttpGet("logs")]
         public ActionResult GetLogs()
         {
-            return Content(Utility.ConvertDataTableToHTML(Utility.ConvertListToDataTable(Program.Logs), 3, 2, 1, null));
+            string begin = "<!DOCTYPE html>\r\n<html>\r\n<body>\r\n";
+            string end = "</body>\r\n</html>";
+            return Content(begin + Utility.ConvertDataTableToHTML(Utility.ConvertListToDataTable(Program.Logs), 3, 2, 1, null)+end );
         }
 
     }
