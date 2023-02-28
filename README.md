@@ -5,7 +5,10 @@ It's an API for Starport Data what else did you expect?
 
 <ul>
   <li><a href="https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Json/7.0.0">Microsoft.Extensions.Configuration.Json</a></li>
-  <li><a href="https://www.nuget.org/packages/Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.17.0/">Microsoft.VisualStudio.Azure.Containers.Tools.Targets</a></li>
+  <li><a href="https://www.nuget.org/packages/Newtonsoft.Json/13.0.2">Newtonsoft.Json</a></li>
+  <li><a href="https://www.nuget.org/packages/MongoDB.Bson/2.19.0">MongoDB.Bson</a></li>
+  <li><a href="https://www.nuget.org/packages/MongoDB.Driver/2.19.0">MongoDB.Driver</a></li>
+  <li><a href="https://www.nuget.org/packages/MongoDB.Driver.Core/2.19.0">MongoDB.Driver.Core</a></li>
   <li><a href="https://www.nuget.org/packages/Swashbuckle.AspNetCore/6.4.0/">Swashbuckle.AspNetCore</a></li>
   <li><a href="https://www.nuget.org/packages/System.Data.DataSetExtensions/4.5.0">System.Data.DataSetExtensions
 </ul>
