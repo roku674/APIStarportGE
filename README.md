@@ -29,3 +29,6 @@ docker run --ip 172.17.0.1 \
 -p 164.92.72.200:443:443 \
 roku674/apistarportge
 
+Hittin any other endpoint will require the APIKey but you can hit these endpoints without the key <br></br>
+http://164.92.72.200/logging/ping <br></br>
+http://164.92.72.200/logging/logs (these logs update clear out hourly so if there's nothing thats why) <br></br>
