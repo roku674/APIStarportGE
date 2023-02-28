@@ -1,7 +1,8 @@
 # APIStarportGE
 //Created by Alexander Fields 
 
-It's an API for Starport Data what else did you expect?
+It's an API for StarportGE Data what else did you expect?
+https://www.starportgame.com/
 
 <ul>
   <li><a href="https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Json/7.0.0">Microsoft.Extensions.Configuration.Json</a></li>
