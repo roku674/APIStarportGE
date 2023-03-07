@@ -22,9 +22,10 @@ namespace APIStarportGE.Controllers
         [HttpGet("ping")]
         public ActionResult Ping()
         {
+            System.TimeSpan uptime = System.DateTime.Now - Program.deployTime;
             return Content($"{LogMessage.MessageSourceSetter} " + "\n" +
                 $"Deployed At: {Program.deployTime}" + "\n" +
-                $"Uptime: {System.DateTime.Now - Program.deployTime}");
+                $"Uptime{"\n"}________________{"\n"}Days: {uptime.Days}{"\n"}Hours: {uptime.Hours}{"\n"}Minutes: {uptime.Minutes}{"\n"}Seconds: {uptime.Seconds}:{uptime.Milliseconds}");
         }
 
         [HttpGet("logs")]
