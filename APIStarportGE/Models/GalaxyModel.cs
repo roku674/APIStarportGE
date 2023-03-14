@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using APIAccount.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Optimization.Objects;
@@ -166,64 +167,7 @@ namespace APIStarportGE.Models
 
                 List<Holding> holdings = Utility.ConvertDataTableToList<Holding>(dataTable);
 
-                List<StarSystem> starSystems = new List<StarSystem>();
-             
-                foreach (Holding holding in holdings)
-                {
-                    StarSystem starSystem = GetSystemByNameNoPlanetPics(StarSystem.GetSystemNameFromPlanet(holding.Location));
-                        
-                    if (starSystem == null)
-                    {
-                        string systemName = StarSystem.GetSystemNameFromPlanet(holding.Location);
-
-                        Planet planet = new Planet(holding,0, 0, true, false, holding.Morale.ToString(), holding.Location, holding.Owner,holding.PlanetType, holding.Population.ToString(), null, null);
-                        List<Planet> planets = new List<Planet>();
-                        planets.Add(planet);
-
-                        starSystem = new StarSystem(systemName,
-                            0,
-                            planets,
-                            null,
-                            new List<string>(),
-                            null,
-                            null,
-                            null,
-                            null,
-                            new Coordinate(holding.GalaxyX, holding.GalaxyY)
-                            );
-                    }
-                    else
-                    {
-                        Planet planet = starSystem.Planets.Find(p => p.Name == holding.Location);
-                        if (planet == null)
-                        {
-                            planet = new Planet(holding, 0, 0, true, false, holding.Morale.ToString(), holding.Location, holding.Owner,holding.PlanetType, holding.Population.ToString(), null, null);
-
-                            starSystem.Planets.Add(planet);
-                        }
-                    }
-                    starSystems.Add(starSystem);
-                }
-
-                foreach (StarSystem starSystem in starSystems)
-                {
-                    if (starSystem.Planets != null)
-                    {
-                        if (starSystem.Planets.Count > 0)
-                        {
-                            foreach (Planet planet in starSystem.Planets)
-                            {
-                                Holding holding = holdings.Find(x => x.Location == planet.Name);
-
-                                if (holding != null)
-                                {
-                                    planet.Holding = holding;
-                                }
-                            }
-                        }
-                    }
-                    UpdateResult result = UpdateStarSystem(starSystem);
-                }
+                UpdateGalaxy(holdings);
 
                 System.IO.File.Delete(tempFile);
                 Program.Logs.Add(new LogMessage("RunUpdateGalaxyColonies", MessageType.Success, "Ran to completion."));
@@ -232,6 +176,47 @@ namespace APIStarportGE.Models
             {
                 System.IO.File.Delete(tempFile);
                 Program.Logs.Add(new LogMessage("RunUpdateGalaxyColonies", MessageType.Error, exc.ToString()));
+            }
+        }
+
+        public void UpdateGalaxy()
+        {
+            List<Holding> colonies = new ColonyModel(databaseName).GetAll();
+
+            foreach(Holding colony in colonies)
+            {
+                Planet planet = GetPlanetByName(colony.Location);
+
+                if (planet == null)
+                {
+                    planet = new Planet(colony, 0, 0, true, false, colony.Morale.ToString(), colony.Location, colony.Owner, colony.PlanetType, colony.Population.ToString(), null, null);
+                    UpdatePlanet(planet);
+                }
+                else
+                {
+                    planet.Holding = colony;
+                    planet.Owner = colony.Owner;
+                    UpdatePlanet(planet);
+                }
+            }
+        }
+        public void UpdateGalaxy(List<Holding> colonies)
+        {
+            foreach (Holding colony in colonies)
+            {
+                Planet planet = GetPlanetByName(colony.Location);
+
+                if (planet == null)
+                {
+                    planet = new Planet(colony, 0, 0, true, false, colony.Morale.ToString(), colony.Location, colony.Owner, colony.PlanetType, colony.Population.ToString(), null, null);
+                    UpdatePlanet(planet);
+                }
+                else
+                {
+                    planet.Holding = colony;
+                    planet.Owner = colony.Owner;
+                    UpdatePlanet(planet);
+                }
             }
         }
 

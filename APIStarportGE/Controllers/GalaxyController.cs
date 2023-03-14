@@ -52,6 +52,32 @@ namespace APIStarportGE.Controllers
             }
         }
 
+        [HttpGet("updategalaxy")]
+        public ActionResult GetGalaxyUpdate(string server)
+        {
+            try
+            {
+                string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+
+                if (string.IsNullOrEmpty(database))
+                {
+                    return BadRequest($"{server} was not a valid server!");
+
+                }
+                GalaxyModel galaxyModel = new GalaxyModel(database);
+
+                galaxyModel.UpdateGalaxy();
+
+                return Ok("Galaxy Updates Ran!");
+           
+            }
+            catch (System.Exception e)
+            {
+                Program.Logs.Add(new LogMessage("GalaxyContrller.GetGalaxy", MessageType.Error, e.ToString()));
+                return StatusCode(500);
+            }
+        }
+
         [HttpGet("getsystembyname")]
         public ActionResult GetSystemByName(string name, string server)
         {
