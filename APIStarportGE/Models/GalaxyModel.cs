@@ -136,6 +136,7 @@ namespace APIStarportGE.Models
             {
                 planet.Picture = null;
             }
+            Program.Logs.Add(new LogMessage("InsertStarSystem", MessageType.Success, "Planet: " + starSystem.Name + " created"));
 
             return Repository.Repository.Insert<StarSystem>(collection, starSystem);
         }
@@ -148,14 +149,14 @@ namespace APIStarportGE.Models
             {
                 System.IO.File.WriteAllText(tempFile, fileContents);
 
-                string[] lines = File.ReadAllLines(tempFile);
+                string[] lines = System.IO.File.ReadAllLines(tempFile);
                 lines[0].Replace(" ", "");
                 for (int i = 0;i < lines.Length;i++)
                 {
                     lines[i] = lines[i].Substring(0, lines[i].Length - 1);
                 }
 
-                File.WriteAllLines(tempFile, lines);
+                System.IO.File.WriteAllLines(tempFile, lines);
 
                 DataTable dataTable = Utility.ConvertCSVtoDataTable(tempFile);
 
@@ -210,6 +211,7 @@ namespace APIStarportGE.Models
                 {
                     planet = new Planet(colony, 0, 0, true, false, colony.Morale.ToString(), colony.Location, colony.Owner, colony.PlanetType, colony.Population.ToString(), null, null);
                     UpdatePlanet(planet);
+
                 }
                 else
                 {
@@ -255,7 +257,10 @@ namespace APIStarportGE.Models
 
                 result = collection.UpdateOne(
                       x => x.Name.Equals(starSystem.Name),
-                      updateDefinition);
+                updateDefinition);
+
+                Program.Logs.Add(new LogMessage("UpdateStarSystem", MessageType.Success, starSystem.Name + " Updated!"));
+
 
             }
             catch (System.Exception e)
@@ -290,6 +295,7 @@ namespace APIStarportGE.Models
                     starSystem.Planets = new List<Planet> { planet };
                 
                     starSystem = new StarSystem(systemName, 0, starSystem.Planets, null, null, "", "", null, null, null);
+                    Program.Logs.Add(new LogMessage("UpdatePlanet", MessageType.Message, "System: " + systemName + " added"));
                     result = UpdateStarSystem(starSystem);
                 }
                 else
@@ -299,6 +305,8 @@ namespace APIStarportGE.Models
                     //if planet doens't exist add to star system
                     if (planetExist == null)
                     {
+                        Program.Logs.Add(new LogMessage("UpdatePlanet", MessageType.Message, "Planet: " + planet.Name + " created"));
+
                         starSystem.Planets.Add(planet);
 
                         //if the planet has a picture sent in with it send it to collection
@@ -339,6 +347,8 @@ namespace APIStarportGE.Models
                         int index = starSystem.Planets.FindIndex(p => p.Name == planet.Name);
                         starSystem.Planets[index] = planet;
                         result = UpdateStarSystem(starSystem);
+                        Program.Logs.Add(new LogMessage("UpdatePlanet", MessageType.Message, "Planet: " + planet.Name + " updated"));
+
                     }
                 }
                 

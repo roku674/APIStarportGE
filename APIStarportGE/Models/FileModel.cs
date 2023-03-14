@@ -100,6 +100,7 @@ namespace APIStarportGE.Models
 
         public bool InsertFile(FileObj file)
         {
+            Program.Logs.Add(new LogMessage("InsertFile", MessageType.Success, file.FileName + " Created!"));
             return Repository.Repository.Insert<FileObj>(collection, file);
         }
 
@@ -133,6 +134,9 @@ namespace APIStarportGE.Models
                 result = collection.UpdateOne(
                       x => x.FileName.Equals(file.FileName),
                       updateDefinition);
+
+                Program.Logs.Add(new LogMessage("UpdateFile", MessageType.Success, file.FileName + " Updated!"));
+
 
             }
             catch (System.Exception e)
