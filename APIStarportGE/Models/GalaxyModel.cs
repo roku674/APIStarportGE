@@ -36,7 +36,6 @@ namespace APIStarportGE.Models
                 System.Console.WriteLine("ERROR: database was not found!");
                 Program.Logs.Add(new LogMessage("GalaxyModel", MessageType.Critical, "Database Not Found!"));
                 Program.SendWebhook(new HttpClient(), Newtonsoft.Json.JsonConvert.SerializeObject(new LogMessage("ColonyModel", MessageType.Critical, "Database Not Found!")));
-
             }
         }
 
@@ -50,7 +49,7 @@ namespace APIStarportGE.Models
                 {
                     return null;
                 }
-                planet = starSystem.Planets.Find(p=> p.Name ==name);
+                planet = starSystem.Planets.Find(p => p.Name == name);
             }
             catch (System.Exception e)
             {
@@ -72,7 +71,7 @@ namespace APIStarportGE.Models
             StarSystem system = null;
             try
             {
-                system = collection.Find(x => x.Name == name).FirstOrDefault();                             
+                system = collection.Find(x => x.Name == name).FirstOrDefault();
             }
             catch (System.Exception e)
             {
@@ -104,10 +103,9 @@ namespace APIStarportGE.Models
             catch (System.Exception e)
             {
                 System.Console.WriteLine($"Failed to register complete with {e}");
-            }          
+            }
             return system;
         }
-
 
         public List<StarSystem> GetStarSystems()
         {
@@ -126,7 +124,7 @@ namespace APIStarportGE.Models
         public bool InsertStarSystem(StarSystem starSystem)
         {
             List<Planet> planetsWPictures = starSystem.Planets.FindAll(p => p.Picture != null);
-            if(planetsWPictures.Count > 0)
+            if (planetsWPictures.Count > 0)
             {
                 new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]).UpdatePictures(planetsWPictures);
             }
@@ -163,7 +161,7 @@ namespace APIStarportGE.Models
                 {
                     int environmentValue = Convert.ToInt32(row["Environment"]);
                     row["Environment"] = Convert.ToBoolean(environmentValue);
-                }              
+                }
 
                 List<Holding> holdings = Utility.ConvertDataTableToList<Holding>(dataTable);
 
@@ -183,13 +181,13 @@ namespace APIStarportGE.Models
         {
             List<Holding> colonies = new ColonyModel(databaseName).GetAll();
 
-            foreach(Holding colony in colonies)
+            foreach (Holding colony in colonies)
             {
                 Planet planet = GetPlanetByName(colony.Location);
 
                 if (planet == null)
                 {
-                    planet = new Planet(colony, 0, 0, true, false, colony.Morale.ToString(), colony.Location, colony.Owner, colony.PlanetType, colony.Population.ToString(), null, null);
+                    planet = new Planet(colony, 0, 0, true, false, colony.Morale.ToString(), colony.Location, colony.Owner, colony.PlanetType, colony.Population.ToString(), true, null, null);
                     UpdatePlanet(planet);
                 }
                 else
@@ -200,6 +198,7 @@ namespace APIStarportGE.Models
                 }
             }
         }
+
         public void UpdateGalaxy(List<Holding> colonies)
         {
             foreach (Holding colony in colonies)
@@ -208,9 +207,8 @@ namespace APIStarportGE.Models
 
                 if (planet == null)
                 {
-                    planet = new Planet(colony, 0, 0, true, false, colony.Morale.ToString(), colony.Location, colony.Owner, colony.PlanetType, colony.Population.ToString(), null, null);
+                    planet = new Planet(colony, 0, 0, true, false, colony.Morale.ToString(), colony.Location, colony.Owner, colony.PlanetType, colony.Population.ToString(), true, null, null);
                     UpdatePlanet(planet);
-
                 }
                 else
                 {
@@ -244,15 +242,15 @@ namespace APIStarportGE.Models
 
                 UpdateDefinition<StarSystem> updateDefinition = Builders<StarSystem>.Update
                     .Set(y => y.Name, starSystem.Name.Trim())
-                    .Set(y => y.MiniMap , starSystem.MiniMap)
-                    .Set(y => y.ConnectedSystems , starSystem.ConnectedSystems)
-                    .Set(y => y.Coordinates , starSystem.Coordinates)
-                    .Set(y => y.CurrentDefenses , starSystem.CurrentDefenses)
-                    .Set(y => y.StarColor , starSystem.StarColor)
-                    .Set(y => y.StarType , starSystem.StarType)
-                    .Set(y => y.Picture , starSystem.Picture)
-                    .Set(y => y.Port , starSystem.Port)
-                    .Set(y => y.Planets , starSystem.Planets)
+                    .Set(y => y.MiniMap, starSystem.MiniMap)
+                    .Set(y => y.ConnectedSystems, starSystem.ConnectedSystems)
+                    .Set(y => y.Coordinates, starSystem.Coordinates)
+                    .Set(y => y.CurrentDefenses, starSystem.CurrentDefenses)
+                    .Set(y => y.StarColor, starSystem.StarColor)
+                    .Set(y => y.StarType, starSystem.StarType)
+                    .Set(y => y.Picture, starSystem.Picture)
+                    .Set(y => y.Port, starSystem.Port)
+                    .Set(y => y.Planets, starSystem.Planets)
                     ;
 
                 result = collection.UpdateOne(
@@ -260,8 +258,6 @@ namespace APIStarportGE.Models
                 updateDefinition);
 
                 Program.Logs.Add(new LogMessage("UpdateStarSystem", MessageType.Success, starSystem.Name + " Updated!"));
-
-
             }
             catch (System.Exception e)
             {
@@ -286,14 +282,14 @@ namespace APIStarportGE.Models
                 {
                     starSystem = new StarSystem();
 
-                    if(planet.Picture != null)
+                    if (planet.Picture != null)
                     {
                         fileModel.UpdateFile(planet.Picture);
                         planet.Picture = null;
                     }
-                   
+
                     starSystem.Planets = new List<Planet> { planet };
-                
+
                     starSystem = new StarSystem(systemName, 0, starSystem.Planets, null, null, "", "", null, null, null);
                     Program.Logs.Add(new LogMessage("UpdatePlanet", MessageType.Message, "System: " + systemName + " added"));
                     result = UpdateStarSystem(starSystem);
@@ -320,7 +316,7 @@ namespace APIStarportGE.Models
                         UpdateStarSystem(starSystem);
                     }
                     else
-                    { 
+                    {
                         //if the planet has a picture sent in with it send it to collection
                         if (planet.Picture != null)
                         {
@@ -337,7 +333,7 @@ namespace APIStarportGE.Models
                             coords.X = planet.Holding.GalaxyX;
                             coords.Y = planet.Holding.GalaxyY;
 
-                            if(starSystem.Coordinates == null)
+                            if (starSystem.Coordinates == null)
                             {
                                 starSystem.Coordinates = coords;
                             }
@@ -348,10 +344,8 @@ namespace APIStarportGE.Models
                         starSystem.Planets[index] = planet;
                         result = UpdateStarSystem(starSystem);
                         Program.Logs.Add(new LogMessage("UpdatePlanet", MessageType.Message, "Planet: " + planet.Name + " updated"));
-
                     }
                 }
-                
             }
             catch (System.Exception e)
             {

@@ -554,9 +554,15 @@ namespace APIAccount.Models
 
                 List<Holding> dontExist = currentHoldings.Except(holdings, new HoldingComparer()).ToList();
 
+                GalaxyModel galaxyModel = new GalaxyModel(databaseName);
+
                 int removed = 0;
                 foreach (Holding holding in dontExist)
                 {
+                    Planet planet = galaxyModel.GetPlanetByName(holding.Location);
+                    planet.IsAllyControlled = false;
+                    galaxyModel.UpdatePlanet(planet);
+
                     DeleteColony(holding.Location);
                     removed += holdings.RemoveAll(item => item.Location == holding.Location);
                 }
