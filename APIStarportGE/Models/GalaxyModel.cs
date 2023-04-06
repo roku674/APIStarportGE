@@ -1,7 +1,6 @@
 ﻿using APIAccount.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using Optimization.Objects;
 using Optimization.Objects.Logging;
 using Optimization.Utility;
@@ -158,7 +157,7 @@ namespace APIStarportGE.Models
 
                 System.IO.File.WriteAllLines(tempFile, lines);
 
-                DataTable dataTable = Utility.ConvertCSVtoDataTable(tempFile);
+                DataTable dataTable = Utility.ConvertCSVtoDataTable(tempFile, ',');
 
                 foreach (DataRow row in dataTable.Rows)
                 {
@@ -217,6 +216,7 @@ namespace APIStarportGE.Models
                 {
                     planet.Holding = colony;
                     planet.Owner = colony.Owner;
+                    planet.Picture = null;
                     UpdatePlanet(planet);
                 }
             }

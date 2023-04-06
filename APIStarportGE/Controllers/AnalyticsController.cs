@@ -31,7 +31,34 @@ namespace APIStarportGE.Controllers
             }
             else if (builds.Count == 0)
             {
-                return StatusCode(404, $"No planet were found!");
+                return StatusCode(404, $"No planet was found!");
+            }
+            else
+            {
+                return StatusCode(503);
+            }
+        }
+
+        [HttpGet("getdds")]
+        public ActionResult GetDDs(string server)
+        {
+            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+
+            if (string.IsNullOrEmpty(database))
+            {
+                return BadRequest($"{server} was not a valid server!");
+            }
+            ColonyModel colonyModel = new ColonyModel(database);
+
+            List<string> dds = colonyModel.GetDDs();
+
+            if (dds.Count > 0)
+            {
+                return Ok(dds);
+            }
+            else if (dds.Count == 0)
+            {
+                return StatusCode(404, $"No planets were found!");
             }
             else
             {
@@ -65,6 +92,7 @@ namespace APIStarportGE.Controllers
                 return StatusCode(503);
             }
         }
+
         [HttpGet("getlosingmoralexy")]
         public ActionResult GetLosingMoraleWithCoords(string server)
         {
@@ -118,6 +146,7 @@ namespace APIStarportGE.Controllers
                 return StatusCode(503);
             }
         }
+
         [HttpGet("getpollutingxy")]
         public ActionResult GetPollutingWithCoords(string server)
         {
@@ -171,6 +200,7 @@ namespace APIStarportGE.Controllers
                 return StatusCode(503);
             }
         }
+
         [HttpGet("getshrinkingorexy")]
         public ActionResult GetShrinkingOreWithCoords(string server)
         {
@@ -199,7 +229,7 @@ namespace APIStarportGE.Controllers
         }
 
         [HttpGet("getsolarlowerthan")]
-        public ActionResult GetSolarOff(int solarRate,int population, string server)
+        public ActionResult GetSolarOff(int solarRate, int population, string server)
         {
             string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
 
@@ -224,6 +254,7 @@ namespace APIStarportGE.Controllers
                 return StatusCode(503);
             }
         }
+
         [HttpGet("getsolarlowerthanxy")]
         public ActionResult GetSolarOffWCoords(int solarRate, int population, string server)
         {
@@ -235,7 +266,7 @@ namespace APIStarportGE.Controllers
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
-            Dictionary<string,string> lowSolars = colonyModel.GetLessthanSolarAsDict(solarRate, population);
+            Dictionary<string, string> lowSolars = colonyModel.GetLessthanSolarAsDict(solarRate, population);
 
             if (lowSolars.Count > 0)
             {

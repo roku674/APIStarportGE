@@ -23,7 +23,6 @@ namespace APIStarportGE
     internal class Program
     {
         public static bool isCancelled { get;set; }
-
         public static string configJson = Directory.GetCurrentDirectory() + "/config.json";
         public static List<LogMessage> Logs { get; set; }
         public static DateTime deployTime { get; set; }

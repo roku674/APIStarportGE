@@ -51,9 +51,9 @@ namespace APIAccount.Models
         public List<string> GetBuildables(bool research)
         {
             List<Holding> holdings = collection.Find(h => h.Population <= 5000).ToList();
-         
+
             List<string> planetNames = new List<string>();
-            foreach(Holding holding in holdings)
+            foreach (Holding holding in holdings)
             {
                 bool adding = false;
                 if (!research)
@@ -78,6 +78,26 @@ namespace APIAccount.Models
                     planetNames.Add(holding.Location);
                 }
             }
+            return planetNames;
+        }
+
+        public List<string> GetDDs()
+        {
+            GalaxyModel galaxyModel = new GalaxyModel(databaseName);
+            List<StarSystem> galaxy = galaxyModel.GetStarSystems();
+
+            List<Planet> doubleDomePlanets = galaxy
+                .SelectMany(starSystem => starSystem.Planets)
+                .Where(planet => planet.IsDoubleDome)
+                .ToList();
+
+            List<string> planetNames = new List<string>();
+
+            foreach (Planet planet in doubleDomePlanets)
+            {
+                planetNames.Add(planet.Name);
+            }
+
             return planetNames;
         }
 
@@ -195,7 +215,6 @@ namespace APIAccount.Models
                         }
                     }
                 }
-
             }
 
             uint totals = arctics + deserts + earths + greenhouses + mountains + oceans + paradises + rockies + volcanics;
@@ -215,14 +234,13 @@ namespace APIAccount.Models
                 "|~{cyan}~" + totalsZ + " Zounds/" + totals + "~{link}21: Cols~";
 
             return quote;
-                      
         }
 
         public List<string> GetPolluting()
         {
             List<Holding> holdings = GetAll();
 
-            List<Holding> offlineSolars = holdings.FindAll(p => p.PolluteRate >0 && p.Population > 1000);
+            List<Holding> offlineSolars = holdings.FindAll(p => p.PolluteRate > 0 && p.Population > 1000);
 
             List<string> colonyNames = new List<string>();
             foreach (Holding holding in offlineSolars)
@@ -232,7 +250,8 @@ namespace APIAccount.Models
 
             return colonyNames;
         }
-        public Dictionary<string,string> GetPollutingAsDict()
+
+        public Dictionary<string, string> GetPollutingAsDict()
         {
             List<Holding> holdings = GetAll();
 
@@ -246,7 +265,6 @@ namespace APIAccount.Models
 
             return colonyNames;
         }
-
 
         public List<string> GetShrinkingMorale()
         {
@@ -262,13 +280,14 @@ namespace APIAccount.Models
 
             return colonyNames;
         }
-        public Dictionary<string,string> GetShrinkingMoraleAsDict()
+
+        public Dictionary<string, string> GetShrinkingMoraleAsDict()
         {
             List<Holding> holdings = GetAll();
 
             List<Holding> offlineSolars = holdings.FindAll(p => p.MoraleChange < 0 && p.Population > 1000);
 
-            Dictionary<string,string> colonyNames = new Dictionary<string,string>();
+            Dictionary<string, string> colonyNames = new Dictionary<string, string>();
             foreach (Holding holding in offlineSolars)
             {
                 colonyNames.Add(holding.Location, $"({holding.GalaxyX}, {holding.GalaxyY})");
@@ -276,7 +295,6 @@ namespace APIAccount.Models
 
             return colonyNames;
         }
-
 
         public List<string> GetShrinkingOre()
         {
@@ -288,14 +306,14 @@ namespace APIAccount.Models
 
             List<string> losingOre = new List<string>();
 
-            foreach(Holding holding in todaysHoldings)
+            foreach (Holding holding in todaysHoldings)
             {
                 Holding planetYesterday = yesterdaysHoldings.Find(h => h.Location == holding.Location);
-                if (planetYesterday != null)         
+                if (planetYesterday != null)
                 {
                     int remainder = holding.Ore - planetYesterday.Ore;
 
-                    if(remainder < 0)
+                    if (remainder < 0 && holding.Population >= 5000)
                     {
                         losingOre.Add(holding.Location);
                     }
@@ -303,17 +321,17 @@ namespace APIAccount.Models
             }
 
             return losingOre;
-
         }
+
         public Dictionary<string, string> GetShrinkingOreAsDict()
         {
             //i need to get yesterday's holdings
 
             DataTable csvDt = GetYesterdaysFileAsDataTable();
-            List<Holding> yesterdaysHoldings = Utility.ConvertDataTableToListFast<Holding>(csvDt,50);
+            List<Holding> yesterdaysHoldings = Utility.ConvertDataTableToListFast<Holding>(csvDt, 50);
             List<Holding> todaysHoldings = GetAll();
 
-            Dictionary<string,string> losingOre = new Dictionary<string, string>();
+            Dictionary<string, string> losingOre = new Dictionary<string, string>();
 
             foreach (Holding holding in todaysHoldings)
             {
@@ -322,7 +340,7 @@ namespace APIAccount.Models
                 {
                     int remainder = holding.Ore - planetYesterday.Ore;
 
-                    if (remainder < 0)
+                    if (remainder < 0 && holding.Population >= 5000)
                     {
                         losingOre.Add(holding.Location, $"({holding.GalaxyX}, {holding.GalaxyY})");
                     }
@@ -330,9 +348,7 @@ namespace APIAccount.Models
             }
 
             return losingOre;
-
         }
-
 
         public List<string> GetLessthanSolar(int solarNum, int population)
         {
@@ -341,14 +357,15 @@ namespace APIAccount.Models
             List<Holding> offlineSolars = holdings.FindAll(p => p.Solarshots <= solarNum && p.Population > population);
 
             List<string> colonyNames = new List<string>();
-            foreach(Holding holding in offlineSolars)
+            foreach (Holding holding in offlineSolars)
             {
                 colonyNames.Add(holding.Location);
             }
 
             return colonyNames;
         }
-        public Dictionary<string,string> GetLessthanSolarAsDict(int solarNum, int population)
+
+        public Dictionary<string, string> GetLessthanSolarAsDict(int solarNum, int population)
         {
             List<Holding> holdings = GetAll();
 
@@ -357,7 +374,7 @@ namespace APIAccount.Models
             Dictionary<string, string> colonyNames = new Dictionary<string, string>();
             foreach (Holding holding in offlineSolars)
             {
-                colonyNames.Add(holding.Location,$"({holding.GalaxyX}, {holding.GalaxyY})");
+                colonyNames.Add(holding.Location, $"({holding.GalaxyX}, {holding.GalaxyY})");
             }
 
             return colonyNames;
@@ -371,9 +388,10 @@ namespace APIAccount.Models
             }
             return Repository.Insert(collection, holding);
         }
+
         public bool InsertHoldings(List<Holding> holdings)
         {
-            if(holdings.Any(x => x.Location == null))
+            if (holdings.Any(x => x.Location == null))
             {
                 return false;
             }
@@ -389,7 +407,7 @@ namespace APIAccount.Models
                 {
                     InsertHolding(holding);
                 }
-                
+
                 UpdateDefinition<Holding> updateDefinition = Builders<Holding>.Update
                     .Set(y => y.PlanetType, holding.PlanetType)
                     .Set(y => y.HopsAway, holding.HopsAway)
@@ -442,7 +460,6 @@ namespace APIAccount.Models
                 result = collection.UpdateOne(
                     x => x.Location.Equals(holding.Location),
                     updateDefinition);
-              
             }
             catch (System.Exception e)
             {
@@ -469,7 +486,7 @@ namespace APIAccount.Models
                         taskPool.Add(task);
                     }
                     else
-                    {                      
+                    {
                         Task<UpdateResult> updateTask = Task.Run(() => UpdateHolding(holding));
 
                         updateTasks.Add(updateTask);
@@ -523,7 +540,7 @@ namespace APIAccount.Models
 
                 File.WriteAllLines(tempFile, lines);
 
-                DataTable dataTable = Utility.ConvertCSVtoDataTable(tempFile);
+                DataTable dataTable = Utility.ConvertCSVtoDataTable(tempFile, ',');
 
                 foreach (DataRow row in dataTable.Rows)
                 {
@@ -538,12 +555,12 @@ namespace APIAccount.Models
                 List<Holding> dontExist = currentHoldings.Except(holdings, new HoldingComparer()).ToList();
 
                 int removed = 0;
-                foreach(Holding holding in dontExist)
+                foreach (Holding holding in dontExist)
                 {
                     DeleteColony(holding.Location);
-                    removed+= holdings.RemoveAll(item => item.Location == holding.Location);
+                    removed += holdings.RemoveAll(item => item.Location == holding.Location);
                 }
-                
+
                 UpdateHoldings(holdings);
 
                 System.IO.File.Delete(tempFile);
@@ -554,7 +571,6 @@ namespace APIAccount.Models
                 Program.Logs.Add(new LogMessage("RunUpdateHoldings", MessageType.Error, exc.ToString()));
                 System.IO.File.Delete(tempFile);
             }
-
         }
 
         public void StartColonyUpdates(object hollerback)
@@ -644,7 +660,7 @@ namespace APIAccount.Models
             FileObj csvFile = fileModel.GetFile(yesterdayCsv);
             string tempPath = Path.GetTempFileName().Replace(".tmp", ".csv");
             System.IO.File.WriteAllText(tempPath, csvFile.FileContents);
-            DataTable csvDt = Utility.ConvertCSVtoDataTable(tempPath);
+            DataTable csvDt = Utility.ConvertCSVtoDataTable(tempPath, ',');
             System.IO.File.Delete(tempPath);
 
             foreach (DataRow row in csvDt.Rows)
@@ -655,7 +671,5 @@ namespace APIAccount.Models
 
             return csvDt;
         }
-
-       
     }
 }

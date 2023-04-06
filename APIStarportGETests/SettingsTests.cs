@@ -1,6 +1,7 @@
 ﻿
 //Created by Alexander Fields 
 using Optimization.Objects;
+using System.IO;
 
 namespace APILoggingTests
 {
