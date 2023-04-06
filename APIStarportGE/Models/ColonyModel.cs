@@ -562,6 +562,7 @@ namespace APIAccount.Models
                     Planet planet = galaxyModel.GetPlanetByName(holding.Location);
                     planet.IsAllyControlled = false;
                     galaxyModel.UpdatePlanet(planet);
+                    Program.Logs.Add(new LogMessage("RunUpdateHoldings", MessageType.Informational, $"{holding.Location} is no longer under our control!"));
 
                     DeleteColony(holding.Location);
                     removed += holdings.RemoveAll(item => item.Location == holding.Location);
