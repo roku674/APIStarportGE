@@ -558,8 +558,9 @@ namespace APIAccount.Models
                     if (!planet.IsAllyControlled)
                     {
                         planet.IsAllyControlled = true;
+                        galaxyModel.UpdatePlanet(planet);
+                        Program.Logs.Add(new LogMessage("RunUpdateHoldings", MessageType.Informational, $"{holding.Location} has now been added to the Galactic Empire!"));
                     }
-                    galaxyModel.UpdatePlanet(planet);
                 }
 
                 List<Holding> currentHoldings = new ColonyModel(databaseName).GetAll();
