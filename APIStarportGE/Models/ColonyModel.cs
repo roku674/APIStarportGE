@@ -547,14 +547,24 @@ namespace APIAccount.Models
                     int environmentValue = Convert.ToInt32(row["Environment"]);
                     row["Environment"] = Convert.ToBoolean(environmentValue);
                 }
+                GalaxyModel galaxyModel = new GalaxyModel(databaseName);
 
                 List<Holding> holdings = Utility.ConvertDataTableToList<Holding>(dataTable);
+
+                foreach (Holding holding in holdings)
+                {
+                    Planet planet = galaxyModel.GetPlanetByName(holding.Location);
+
+                    if (!planet.IsAllyControlled)
+                    {
+                        planet.IsAllyControlled = true;
+                    }
+                    galaxyModel.UpdatePlanet(planet);
+                }
 
                 List<Holding> currentHoldings = new ColonyModel(databaseName).GetAll();
 
                 List<Holding> dontExist = currentHoldings.Except(holdings, new HoldingComparer()).ToList();
-
-                GalaxyModel galaxyModel = new GalaxyModel(databaseName);
 
                 int removed = 0;
                 foreach (Holding holding in dontExist)
