@@ -1,4 +1,4 @@
-﻿//Created by Alexander Fields 
+﻿//Created by Alexander Fields
 
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -70,6 +70,7 @@ namespace APIStarportGE.Models
             }
             return csvs;
         }
+
         public List<FileObj> GetCsv(DateTime date)
         {
             List<FileObj> csvs = new List<FileObj>();
@@ -136,8 +137,6 @@ namespace APIStarportGE.Models
                       updateDefinition);
 
                 Program.Logs.Add(new LogMessage("UpdateFile", MessageType.Success, file.FileName + " Updated!"));
-
-
             }
             catch (System.Exception e)
             {
@@ -155,14 +154,30 @@ namespace APIStarportGE.Models
             {
                 try
                 {
-                    planet.Picture.FileName = Path.ChangeExtension(
-                            planet.Picture.FileName,
-                            Path.GetExtension(planet.Picture.FileName).ToLower()
-                            );
+                    if (planet.Picture != null)
+                    {
+                        planet.Picture.FileName = Path.ChangeExtension(
+                          planet.Picture.FileName,
+                          Path.GetExtension(planet.Picture.FileName).ToLower()
+                          );
+                    }
+
+                    if (planet.Map != null)
+                    {
+                        planet.Map.FileName = Path.ChangeExtension(
+                          planet.Map.FileName,
+                          Path.GetExtension(planet.Map.FileName).ToLower()
+                          );
+                    }
 
                     if (GetFile(planet.Picture.FileName) == null)
-                    {                
+                    {
                         InsertFile(planet.Picture);
+                    }
+
+                    if (GetFile(planet.Map.FileName) == null)
+                    {
+                        InsertFile(planet.Map);
                     }
 
                     UpdateResult result = UpdateFile(planet.Picture);

@@ -123,15 +123,17 @@ namespace APIStarportGE.Models
 
         public bool InsertStarSystem(StarSystem starSystem)
         {
-            List<Planet> planetsWPictures = starSystem.Planets.FindAll(p => p.Picture != null);
+            List<Planet> planetsWPictures = starSystem.Planets.FindAll(p => p.Picture != null || p.Map != null);
             if (planetsWPictures.Count > 0)
             {
-                new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]).UpdatePictures(planetsWPictures);
+                FileModel fileModel = new FileModel(databaseName, Settings.Configuration["MongoDB:Databases:Collections:pictures"]);
+                fileModel.UpdatePictures(planetsWPictures);
             }
 
             foreach (Planet planet in starSystem.Planets)
             {
                 planet.Picture = null;
+                planet.Map = null;
             }
             Program.Logs.Add(new LogMessage("InsertStarSystem", MessageType.Success, "Planet: " + starSystem.Name + " created"));
 
