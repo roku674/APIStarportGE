@@ -48,11 +48,11 @@ namespace APIAccount.Models
             return collection.Find(new BsonDocument()).ToList();
         }
 
-        public List<string> GetBuildables(bool research)
+        public List<KeyValuePair<string, string>> GetBuildables(bool research)
         {
             List<Holding> holdings = collection.Find(h => h.Population <= 5000).ToList();
 
-            List<string> planetNames = new List<string>();
+            List<KeyValuePair<string, string>> planetNames = new List<KeyValuePair<string, string>>();
             foreach (Holding holding in holdings)
             {
                 bool adding = false;
@@ -75,7 +75,7 @@ namespace APIAccount.Models
 
                 if (adding)
                 {
-                    planetNames.Add(holding.Location);
+                    planetNames.Add(new KeyValuePair<string, string>(holding.Location, $"({holding.GalaxyX},{holding.GalaxyY})"));
                 }
             }
             return planetNames;
@@ -266,16 +266,16 @@ namespace APIAccount.Models
             return colonyNames;
         }
 
-        public List<string> GetShrinkingMorale()
+        public List<KeyValuePair<string, string>> GetShrinkingMorale()
         {
             List<Holding> holdings = GetAll();
 
             List<Holding> offlineSolars = holdings.FindAll(p => p.MoraleChange < 0 && p.Population > 1000);
 
-            List<string> colonyNames = new List<string>();
+            List<KeyValuePair<string, string>> colonyNames = new List<KeyValuePair<string, string>>();
             foreach (Holding holding in offlineSolars)
             {
-                colonyNames.Add(holding.Location);
+                colonyNames.Add(new KeyValuePair<string, string>(holding.Location, $"({holding.GalaxyX},{holding.GalaxyY})"));
             }
 
             return colonyNames;

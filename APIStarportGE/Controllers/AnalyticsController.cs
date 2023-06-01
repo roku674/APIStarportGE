@@ -39,6 +39,33 @@ namespace APIStarportGE.Controllers
             }
         }
 
+        [HttpGet("getbuildsCoords")]
+        public ActionResult GetBuildsWithCoordinates(string server, bool research)
+        {
+            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+
+            if (string.IsNullOrEmpty(database))
+            {
+                return BadRequest($"{server} was not a valid server!");
+            }
+            ColonyModel colonyModel = new ColonyModel(database);
+
+            List<KeyValuePair<string, string>> builds = colonyModel.GetBuildables(research);
+
+            if (builds.Count > 0)
+            {
+                return Ok(builds);
+            }
+            else if (builds.Count == 0)
+            {
+                return StatusCode(404, $"No planet was found!");
+            }
+            else
+            {
+                return StatusCode(503);
+            }
+        }
+
         [HttpGet("getdds")]
         public ActionResult GetDDs(string server)
         {
