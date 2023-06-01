@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Optimization.Objects;
 using StarportObjects;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace APIStarportGE.Controllers
 {
@@ -24,8 +23,7 @@ namespace APIStarportGE.Controllers
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
-            List<KeyValuePair<string, string>> kvp = colonyModel.GetBuildables(research);
-            List<string> builds = kvp.Select(kv => kv.Key).ToList();
+            List<string> builds = colonyModel.GetBuildables(research, false);
 
             if (builds.Count > 0)
             {
@@ -52,7 +50,7 @@ namespace APIStarportGE.Controllers
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
-            List<KeyValuePair<string, string>> builds = colonyModel.GetBuildables(research);
+            List<string> builds = colonyModel.GetBuildables(research, true);
 
             if (builds.Count > 0)
             {
@@ -106,7 +104,7 @@ namespace APIStarportGE.Controllers
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
-            List<KeyValuePair<string, string>> shrinkingMorale = colonyModel.GetShrinkingMorale();
+            List<string> shrinkingMorale = colonyModel.GetShrinkingMorale();
 
             if (shrinkingMorale.Count > 0)
             {

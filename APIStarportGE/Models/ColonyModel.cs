@@ -48,11 +48,11 @@ namespace APIAccount.Models
             return collection.Find(new BsonDocument()).ToList();
         }
 
-        public List<KeyValuePair<string, string>> GetBuildables(bool research)
+        public List<string> GetBuildables(bool research, bool hasCoordinates)
         {
             List<Holding> holdings = collection.Find(h => h.Population <= 5000).ToList();
 
-            List<KeyValuePair<string, string>> planetNames = new List<KeyValuePair<string, string>>();
+            List<string> planetNames = new List<string>();
             foreach (Holding holding in holdings)
             {
                 bool adding = false;
@@ -75,7 +75,14 @@ namespace APIAccount.Models
 
                 if (adding)
                 {
-                    planetNames.Add(new KeyValuePair<string, string>(holding.Location, $"({holding.GalaxyX},{holding.GalaxyY})"));
+                    if (hasCoordinates)
+                    {
+                        planetNames.Add($"{holding.Location}, ({holding.GalaxyX},{holding.GalaxyY})");
+                    }
+                    else
+                    {
+                        planetNames.Add(holding.Location);
+                    }
                 }
             }
             return planetNames;
@@ -266,16 +273,16 @@ namespace APIAccount.Models
             return colonyNames;
         }
 
-        public List<KeyValuePair<string, string>> GetShrinkingMorale()
+        public List<string> GetShrinkingMorale()
         {
             List<Holding> holdings = GetAll();
 
             List<Holding> offlineSolars = holdings.FindAll(p => p.MoraleChange < 0 && p.Population > 1000);
 
-            List<KeyValuePair<string, string>> colonyNames = new List<KeyValuePair<string, string>>();
+            List<string> colonyNames = new List<string>();
             foreach (Holding holding in offlineSolars)
             {
-                colonyNames.Add(new KeyValuePair<string, string>(holding.Location, $"({holding.GalaxyX},{holding.GalaxyY})"));
+                colonyNames.Add($"{holding.Location}, ({holding.GalaxyX},{holding.GalaxyY})");
             }
 
             return colonyNames;
