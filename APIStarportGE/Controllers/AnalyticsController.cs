@@ -104,7 +104,7 @@ namespace APIStarportGE.Controllers
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
-            List<string> shrinkingMorale = colonyModel.GetShrinkingMorale();
+            List<KeyValuePair<string, string>> shrinkingMorale = colonyModel.GetShrinkingMorale();
 
             if (shrinkingMorale.Count > 0)
             {
