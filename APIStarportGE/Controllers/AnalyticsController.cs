@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Optimization.Objects;
 using StarportObjects;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace APIStarportGE.Controllers
 {
@@ -23,7 +24,8 @@ namespace APIStarportGE.Controllers
             }
             ColonyModel colonyModel = new ColonyModel(database);
 
-            List<string> builds = colonyModel.GetBuildables(research);
+            List<KeyValuePair<string, string>> kvp = colonyModel.GetBuildables(research);
+            List<string> builds = kvp.Select(kv => kv.Key).ToList();
 
             if (builds.Count > 0)
             {
