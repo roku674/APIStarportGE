@@ -102,7 +102,7 @@ namespace APIAccount.Models
 
             foreach (Planet planet in doubleDomePlanets)
             {
-                planetNames.Add($"{holding.Location}, ({holding.GalaxyX},{holding.GalaxyY})");
+                planetNames.Add($"{planet.Name}, ({planet.Holding.GalaxyX},{planet.Holding.GalaxyY})");
             }
 
             return planetNames;
