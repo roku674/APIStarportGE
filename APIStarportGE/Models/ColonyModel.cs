@@ -102,7 +102,7 @@ namespace APIAccount.Models
 
             foreach (Planet planet in doubleDomePlanets)
             {
-                planetNames.Add(planet.Name);
+                planetNames.Add($"{holding.Location}, ({holding.GalaxyX},{holding.GalaxyY})");
             }
 
             return planetNames;
@@ -137,86 +137,84 @@ namespace APIAccount.Models
             List<Holding> theirPlanets = holdings.FindAll(p => p.Owner == owner);
             uint arctics = 0, arcticsZ = 0, deserts = 0, desertsZ = 0, earths = 0, earthsZ = 0, greenhouses = 0, greenhousesZ = 0, mountains = 0, mountainsZ = 0, oceans = 0, oceansZ = 0, paradises = 0, paradisesZ = 0, rockies = 0, rockiesZ = 0, volcanics = 0, volcanicsZ = 0, invasions = 0, dd = 0;
 
-            foreach (StarportObjects.Holding planet in theirPlanets)
+            foreach (StarportObjects.Holding holding in theirPlanets)
             {
-                if (planet.Name.EndsWith(".I") || planet.Name.EndsWith(".ZI") || planet.Name.EndsWith(".ZDI"))
-                {
-                    invasions++;
-                }
-                if (planet.Name.EndsWith(".D") || planet.Name.EndsWith(".DI") || planet.Name.Contains(".ZD"))
+                GalaxyModel galaxyModel = new GalaxyModel(databaseName);
+                Planet planet = galaxyModel.GetPlanetByName(holding.Location);
+                if (planet.IsDoubleDome)
                 {
                     dd++;
                 }
-                if (planet.Population >= 5000)
+                if (holding.Population >= 5000)
                 {
-                    if (planet.PlanetType.Equals("arctic"))
+                    if (holding.PlanetType.Equals("arctic"))
                     {
                         arctics++;
-                        if (planet.Population >= 90000)
+                        if (holding.Population >= 90000)
                         {
                             arcticsZ++;
                         }
                     }
-                    else if (planet.PlanetType.Equals("desert"))
+                    else if (holding.PlanetType.Equals("desert"))
                     {
                         deserts++;
-                        if (planet.Population >= 90000)
+                        if (holding.Population >= 90000)
                         {
                             desertsZ++;
                         }
                     }
-                    else if (planet.PlanetType.Equals("earthlike"))
+                    else if (holding.PlanetType.Equals("earthlike"))
                     {
                         earths++;
-                        if (planet.Population >= 90000)
+                        if (holding.Population >= 90000)
                         {
                             earthsZ++;
                         }
                     }
-                    else if (planet.PlanetType.Equals("greenhouse"))
+                    else if (holding.PlanetType.Equals("greenhouse"))
                     {
                         greenhouses++;
-                        if (planet.Population >= 90000)
+                        if (holding.Population >= 90000)
                         {
                             greenhousesZ++;
                         }
                     }
-                    else if (planet.PlanetType.Equals("mountainous"))
+                    else if (holding.PlanetType.Equals("mountainous"))
                     {
                         mountains++;
-                        if (planet.Population >= 90000)
+                        if (holding.Population >= 90000)
                         {
                             mountainsZ++;
                         }
                     }
-                    else if (planet.PlanetType.Equals("oceanic"))
+                    else if (holding.PlanetType.Equals("oceanic"))
                     {
                         oceans++;
-                        if (planet.Population >= 90000)
+                        if (holding.Population >= 90000)
                         {
                             oceansZ++;
                         }
                     }
-                    else if (planet.PlanetType.Equals("Intergalactic paradise"))
+                    else if (holding.PlanetType.Equals("Intergalactic paradise"))
                     {
                         paradises++;
-                        if (planet.Population >= 90000)
+                        if (holding.Population >= 90000)
                         {
                             paradisesZ++;
                         }
                     }
-                    else if (planet.PlanetType.Equals("rocky"))
+                    else if (holding.PlanetType.Equals("rocky"))
                     {
                         rockies++;
-                        if (planet.Population >= 90000)
+                        if (holding.Population >= 90000)
                         {
                             rockiesZ++;
                         }
                     }
-                    else if (planet.PlanetType.Equals("volcanic"))
+                    else if (holding.PlanetType.Equals("volcanic"))
                     {
                         volcanics++;
-                        if (planet.Population >= 90000)
+                        if (holding.Population >= 90000)
                         {
                             volcanicsZ++;
                         }
