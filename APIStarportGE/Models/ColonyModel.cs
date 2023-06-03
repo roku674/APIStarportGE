@@ -77,7 +77,7 @@ namespace APIAccount.Models
                 {
                     if (hasCoordinates)
                     {
-                        planetNames.Add($"{holding.Location}, ({holding.GalaxyX},{holding.GalaxyY})");
+                        planetNames.Add($"{holding.Location} | ({holding.GalaxyX}, {holding.GalaxyY}) | {holding.Owner}");
                     }
                     else
                     {
@@ -91,6 +91,8 @@ namespace APIAccount.Models
         public List<string> GetDDs()
         {
             GalaxyModel galaxyModel = new GalaxyModel(databaseName);
+            ColonyModel colonyModel = new ColonyModel(databaseName);
+
             List<StarSystem> galaxy = galaxyModel.GetStarSystems();
 
             List<Planet> doubleDomePlanets = galaxy
@@ -102,7 +104,15 @@ namespace APIAccount.Models
 
             foreach (Planet planet in doubleDomePlanets)
             {
-                planetNames.Add($"{planet.Name}, ({planet.Holding.GalaxyX},{planet.Holding.GalaxyY})");
+                Holding holding = colonyModel.GetPlanetByName(planet.Name);
+                if (holding != null)
+                {
+                    planetNames.Add($"{planet.Name}, ({planet.Holding.GalaxyX},{planet.Holding.GalaxyY}), {planet.Holding.Owner}");
+                }
+                else
+                {
+                    planetNames.Add($"Dont Own: {planet.Name}, ({planet.Holding.GalaxyX},{planet.Holding.GalaxyY})");
+                }
             }
 
             return planetNames;
@@ -245,12 +255,12 @@ namespace APIAccount.Models
         {
             List<Holding> holdings = GetAll();
 
-            List<Holding> offlineSolars = holdings.FindAll(p => p.PolluteRate > 0 && p.Population > 1000);
+            List<Holding> offlineSolars = holdings.FindAll(p => p.PolluteRate > 0 && p.Population > 5000);
 
             List<string> colonyNames = new List<string>();
             foreach (Holding holding in offlineSolars)
             {
-                colonyNames.Add(holding.Location);
+                colonyNames.Add($"{holding.Location} | ({holding.GalaxyX}, {holding.GalaxyY}) | {holding.Owner}");
             }
 
             return colonyNames;
@@ -280,7 +290,7 @@ namespace APIAccount.Models
             List<string> colonyNames = new List<string>();
             foreach (Holding holding in offlineSolars)
             {
-                colonyNames.Add($"{holding.Location}, ({holding.GalaxyX},{holding.GalaxyY})");
+                colonyNames.Add($"{holding.Location} | ({holding.GalaxyX}, {holding.GalaxyY}) | {holding.Owner}");
             }
 
             return colonyNames;
@@ -320,34 +330,7 @@ namespace APIAccount.Models
 
                     if (remainder < 0 && holding.Population >= 5000)
                     {
-                        losingOre.Add(holding.Location);
-                    }
-                }
-            }
-
-            return losingOre;
-        }
-
-        public Dictionary<string, string> GetShrinkingOreAsDict()
-        {
-            //i need to get yesterday's holdings
-
-            DataTable csvDt = GetYesterdaysFileAsDataTable();
-            List<Holding> yesterdaysHoldings = Utility.ConvertDataTableToListFast<Holding>(csvDt, 50);
-            List<Holding> todaysHoldings = GetAll();
-
-            Dictionary<string, string> losingOre = new Dictionary<string, string>();
-
-            foreach (Holding holding in todaysHoldings)
-            {
-                Holding planetYesterday = yesterdaysHoldings.Find(h => h.Location == holding.Location);
-                if (planetYesterday != null)
-                {
-                    int remainder = holding.Ore - planetYesterday.Ore;
-
-                    if (remainder < 0 && holding.Population >= 5000)
-                    {
-                        losingOre.Add(holding.Location, $"({holding.GalaxyX}, {holding.GalaxyY})");
+                        losingOre.Add($"{holding.Location} | ({holding.GalaxyX}, {holding.GalaxyY}) | {holding.Owner}");
                     }
                 }
             }
@@ -383,6 +366,97 @@ namespace APIAccount.Models
             }
 
             return colonyNames;
+        }
+
+        public object[] GetCaptureList()
+        {
+            GalaxyModel galaxyModel = new GalaxyModel(databaseName);
+            List<StarSystem> galaxy = galaxyModel.GetStarSystems();
+
+            List<Planet> planetsList = new List<Planet>();
+
+            List<string> planetNames = new List<string>();
+
+            foreach (StarSystem system in galaxy)
+            {
+                if (system.Planets != null)
+                {
+                    List<Planet> planets = system.Planets.FindAll(x => !x.IsAllyControlled && x.Holding?.Population > 0);
+
+                    planetsList.AddRange(planets);
+                }
+            }
+
+            planetsList = planetsList.OrderByDescending(planet => planet.Holding.Nukes).ToList();
+
+            foreach (Planet planet in planetsList)
+            {
+                if (planet.Holding != null)
+                {
+                    planetNames.Add($"{planet.Name} | ({planet.Holding.GalaxyX},{planet.Holding.GalaxyY})" +
+                        $" | Population: {planet.Holding.Population}" +
+                        $" | Nukes: {planet.Holding.Nukes}" +
+                        $" | CMines: {planet.Holding.CompoundMines}" +
+                        $" | Lasers: {planet.Holding.LaserCannons}");
+                }
+                else
+                {
+                    planetNames.Add($"{planet.Name}, ({planet.Holding.GalaxyX},{planet.Holding.GalaxyY})");
+                }
+            }
+            object[] theObject = new object[2];
+            theObject[0] = planetNames;
+            theObject[1] = planetsList;
+            return theObject;
+        }
+
+        public List<string> GetCaptureSystems()
+        {
+            GalaxyModel galaxyModel = new GalaxyModel(databaseName);
+            List<StarSystem> galaxy = galaxyModel.GetStarSystems();
+
+            List<Planet> planetsList = new List<Planet>();
+
+            List<string> systemNames = new List<string>();
+
+            List<StarSystem> starSystems = galaxy
+               .Where(starSystem => starSystem.Planets.Any(planet => (bool)!(planet?.IsAllyControlled)))
+               .ToList();
+
+            List<StarSystem> sortedStarSystems = starSystems
+                .OrderByDescending(starSystem => starSystem.Planets.Count(planet => !(planet?.IsAllyControlled ?? false)))
+                .ToList();
+
+            foreach (StarSystem system in sortedStarSystems)
+            {
+                systemNames.Add($"{system.Name}, ({system.Coordinates?.X},{system.Coordinates?.Y})");
+            }
+
+            return systemNames;
+        }
+
+        public List<string> GetOurNukesList()
+        {
+            GalaxyModel galaxyModel = new GalaxyModel(databaseName);
+            List<StarSystem> galaxy = galaxyModel.GetStarSystems();
+
+            List<Planet> planetsList = new List<Planet>();
+
+            List<string> systemNames = new List<string>();
+
+            List<StarSystem> starSystemsWithNukes = galaxy
+               .Where(starSystem => starSystem.Planets.Any(planet => planet?.Holding?.Nukes > 150))
+               .ToList();
+
+            List<StarSystem> sortedStarSystems = starSystemsWithNukes
+                .OrderByDescending(starSystem => starSystem.Planets.Sum(planet => planet.Holding.Nukes))
+                .ToList();
+
+            foreach (StarSystem system in sortedStarSystems)
+            {
+                systemNames.Add($"{system.Name}, ({system.Coordinates.X},{system.Coordinates.Y})");
+            }
+            return systemNames;
         }
 
         public bool InsertHolding(Holding holding)

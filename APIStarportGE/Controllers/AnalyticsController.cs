@@ -147,6 +147,33 @@ namespace APIStarportGE.Controllers
             }
         }
 
+        [HttpGet("getnukes")]
+        public ActionResult GetNukesList(string server)
+        {
+            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+
+            if (string.IsNullOrEmpty(database))
+            {
+                return BadRequest($"{server} was not a valid server!");
+            }
+            ColonyModel colonyModel = new ColonyModel(database);
+
+            List<string> systems = colonyModel.GetOurNukesList();
+
+            if (systems.Count > 0)
+            {
+                return Ok(systems);
+            }
+            else if (systems.Count == 0)
+            {
+                return StatusCode(404, $"No planets were found!");
+            }
+            else
+            {
+                return StatusCode(503);
+            }
+        }
+
         [HttpGet("getpolluting")]
         public ActionResult GetPolluting(string server)
         {
@@ -201,6 +228,60 @@ namespace APIStarportGE.Controllers
             }
         }
 
+        [HttpGet("getcapturelist")]
+        public ActionResult GetCaptureList(string server)
+        {
+            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+
+            if (string.IsNullOrEmpty(database))
+            {
+                return BadRequest($"{server} was not a valid server!");
+            }
+            ColonyModel colonyModel = new ColonyModel(database);
+
+            object[] planets = colonyModel.GetCaptureList();
+
+            if (planets.Length > 0)
+            {
+                return Ok(planets);
+            }
+            else if (planets.Length == 0)
+            {
+                return StatusCode(404, $"No planets were found!");
+            }
+            else
+            {
+                return StatusCode(503);
+            }
+        }
+
+        [HttpGet("getcapturesystem")]
+        public ActionResult GetCaptureSystem(string server)
+        {
+            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
+
+            if (string.IsNullOrEmpty(database))
+            {
+                return BadRequest($"{server} was not a valid server!");
+            }
+            ColonyModel colonyModel = new ColonyModel(database);
+
+            List<string> systems = colonyModel.GetCaptureSystems();
+
+            if (systems.Count > 0)
+            {
+                return Ok(systems);
+            }
+            else if (systems.Count == 0)
+            {
+                return StatusCode(404, $"No planets were found!");
+            }
+            else
+            {
+                return StatusCode(503);
+            }
+        }
+
         [HttpGet("getshrinkingore")]
         public ActionResult GetShrinkingOre(string server)
         {
@@ -213,33 +294,6 @@ namespace APIStarportGE.Controllers
             ColonyModel colonyModel = new ColonyModel(database);
 
             List<string> shrinkingOre = colonyModel.GetShrinkingOre();
-
-            if (shrinkingOre.Count > 0)
-            {
-                return Ok(shrinkingOre);
-            }
-            else if (shrinkingOre.Count == 0)
-            {
-                return StatusCode(404, $"No planet were found!");
-            }
-            else
-            {
-                return StatusCode(503);
-            }
-        }
-
-        [HttpGet("getshrinkingorexy")]
-        public ActionResult GetShrinkingOreWithCoords(string server)
-        {
-            string database = Settings.Configuration[$"MongoDB:Databases:{server}"];
-
-            if (string.IsNullOrEmpty(database))
-            {
-                return BadRequest($"{server} was not a valid server!");
-            }
-            ColonyModel colonyModel = new ColonyModel(database);
-
-            Dictionary<string, string> shrinkingOre = colonyModel.GetShrinkingOreAsDict();
 
             if (shrinkingOre.Count > 0)
             {
